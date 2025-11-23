@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS `patient` (
   `address` varchar(255) NOT NULL DEFAULT '',
   `user_id` int DEFAULT NULL,
   `sex` enum('Male','Female') NOT NULL,
+  `age` int NOT NULL,
   PRIMARY KEY (`patient_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `FK_patient_user_account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
