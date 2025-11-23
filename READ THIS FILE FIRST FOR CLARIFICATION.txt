@@ -1,0 +1,29 @@
+UNG APP JS ITO UNG I 
+node app.js 
+SA TERMINAL PARA MAG RUN YUNG WEBSITE NATIN SA LOCALHOST 
+
+SA /SRC FOLDER LAHAT NG MGA GAGAMITIN NATIN
+
+/PUBLIC -> /PAGES DITO YUNG MGA HTML FILES, CSS AND JS FILES. 
+
+(PWEDE NAMAN MAY SARILING FOLDER NG CSS, JS PERO NILAGAY KO MUNA ISA BAKA AYAW NYO IHIWALAY E, NEED PA KASI IIMPORT)
+
+/PUBLIC -> /IMAGES DITO YUNG MGA IMAGES
+
+/DATABASE NANDITO UNG SQL FILE NA NEED NYONG I IMPORT SA LARAGON 
+
+/SERVER DITO LAHAT NG BACKEND
+
+/SERVER -> /CONFIG -> db.js   ITO YUNG CONNECTION NATIN PARA MA CONNECT YUNG SQL FILE FROM LARAGON PAPUNTA SA NODE JS
+
+
+
+
+
+MGA NEED I INSTALL SA NPM
+const express = require("express");          // Express framework -> katulad sa may IT3 naten
+const session = require("express-session");  // Session handling -> BALE ITO YUNG $_SESSION SA MAY PHP, PARA MAKAPAG LOGIN KA AT MASAVE UNG DATA NG USER NA NAGLOLOGIN
+const mysql = require("mysql2");             // MySQL connection -> ito ung connection para sa SQL FILE SA LARAGON
+const bcrypt = require("bcrypt");            // Password Hashing -> para ma encrypt ung password ng account
+
+npm install express express-session mysql2 bcrypt
