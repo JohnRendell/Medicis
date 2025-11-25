@@ -2,8 +2,13 @@ const express = require("express");
 const app = express();
 const { createServer } = require("http");
 const expressServer = createServer(app);
+const path = require("path");
 
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, "public")));
+
+
 
 //database
 const db = require("./server/config/db");
@@ -18,9 +23,10 @@ const db = require("./server/config/db");
 })();
 
 //entry point
-app.use("/", (req, res)=>{
-    res.send("Server is alive") //--> palitan ito ng index.html, bale dito ise serve yung entry point ng website
-})
+app.get("/", (req, res)=>{
+    res.sendFile(path.join(__dirname, "public", "pages", "User", "Info_Dashboard.html"));
+
+});
 
 //routers
 //-->

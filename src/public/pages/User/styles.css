@@ -5,6 +5,7 @@
     --primary-dark: rgb(40, 0, 80);
     --text-dark: #333;
     --text-light: #666;
+    --btn-text-color: #ffffff;
     --border-color: #ddd;
     --bg-light: #f9f9f9;
 }
@@ -87,7 +88,7 @@ body {
 
 .nav-btn.active {
     background-color: var(--primary-color);
-    color: white;
+    -webkit-text-fill-color: var(--btn-text-color);
     font-weight: 600;
 }
 
