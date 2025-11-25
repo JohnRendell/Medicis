@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const { createServer } = require("http");
 const expressServer = createServer(app);
-
+// node src/app.js
 app.use(express.json());
 
 //database
