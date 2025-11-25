@@ -1,10 +1,12 @@
-import mysql from 'mysql2'
+const mysql = require("mysql2");
 
-const pool = mysql.createPool({
-    host: '127.0.0.1',
-    user: 'root',
-    password: '',
-    database: 'healthcare_db'
-}).promise()
+const config = mysql.createConnection({
+    host: "localhost",
+    user: "admin",
+    password: "admin",
+    database: "healthcare_db"
+})
 
-export default pool;
+const database = config.promise()
+
+module.exports = database;
