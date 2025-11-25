@@ -1,0 +1,103 @@
+body {
+    background: #f3f3f3;
+    font-family: Arial, sans-serif;
+}
+
+.login-container {
+    width: 1000px;
+    height: 600px;
+    background: white;
+    margin: 40px auto;
+    display: flex;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* LEFT SIDE */
+.left-panel {
+    width: 45%;
+    background: url("../images/nurse_holding_hand.png");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    width: 170px;
+    margin-bottom: 10px;
+}
+
+.brand {
+    font-size: 40px;
+    font-weight: bold;
+    color: #0e2a70;
+}
+
+/* RIGHT SIDE */
+.right-panel {
+    width: 55%;
+    padding: 60px;
+}
+
+.right-panel h2 {
+    margin-bottom: 20px;
+}
+
+.blue {
+    color: #0e2a70;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    margin-bottom: 15px;
+}
+
+.primary-btn {
+    width: 100%;
+    padding: 12px;
+    background: #4a32ff;
+    border: none;
+    color: white;
+    border-radius: 7px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.center-text {
+    text-align: center;
+    margin: 15px 0;
+    color: #555;
+}
+
+.google-btn {
+    width: 100%;
+    padding: 10px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.google-icon {
+    width: 20px;
+}
+
+.footer-text {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.footer-text a {
+    color: #4a32ff;
+}
