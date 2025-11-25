@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Appointments - Medicis+</title>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-container">
+            <h1 class="logo">Medicis +</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                 <li><a class="nav-btn active" href="Info_Dashboard.html"><span class="icon">👤</span> Patient Profile</a></li>
+                <li><a class="nav-btn" href="Appointment Dashboard.html"><span class="icon">📅</span> Appointments</a></li>
+                <li><a class="nav-btn" href="Billing_Receipt_Dashboard.html"><span class="icon">💳</span> Billing</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="footer-btn"><span class="icon">❓</span> Support</button>
+            <div class="account-info">
+                <button class="footer-btn"><span class="icon">👤</span> My Account</button>
+                <p class="patient-id">Patient ID: <span id="patient-id-display">1234</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Appointments (copied) -->
+        <div id="appointments" class="page active">
+            <div class="page-header" style="position: relative;">
+                <h1>Your Appointments</h1>
+                <p class="welcome-text">Welcome Back, <span id="appt-user-name">Juan Dela Cruz</span></p>
+                <button class="btn-secondary signout-top" title="Sign out" style="position: absolute; top: 15px; right: 10px;">Sign Out</button>
+                <hr>
+            </div>
+            <div class="appointments-container">
+                <div class="upcoming-appointments">
+                    <h2>Upcoming Appointment Details</h2>
+                    <div class="appointment-card">
+                        <div class="appointment-dates">
+                            <div class="date-item"><span class="date-icon">📅</span><span class="date-value">12/01/2025</span></div>
+                            <div class="date-item"><span class="date-icon">📅</span><span class="date-value">12/20/2025</span></div>
+                            <div class="date-item"><span class="date-icon">📅</span><span class="date-value">01/10/2026</span></div>
+                        </div>
+                        <button class="btn-secondary">View Details</button>
+                    </div>
+                </div>
+                <div class="recent-appointments">
+                    <h2>Recent Appointments</h2>
+                    <table class="appointments-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Doctor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointments-tbody">
+                            <!-- populated by script.js -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="appointment-actions">
+                    <button class="btn-primary" id="schedule-appt-btn"><span class="icon">📅</span> Schedule Appointment</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- include schedule modal here (script expects these ids) -->
+        <div id="schedule-appt-overlay" class="edit-overlay" hidden>
+            <div class="edit-panel" role="dialog" aria-modal="true" aria-labelledby="schedule-appt-title">
+                <div class="edit-header">
+                    <h2 id="schedule-appt-title">Schedule an Appointment</h2>
+                </div>
+                <form id="schedule-appt-form" class="edit-form" novalidate>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="input-appt-datetime">Date & Time</label>
+                            <input id="input-appt-datetime" name="appointment-datetime" type="datetime-local" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="input-appt-doctor">Doctor</label>
+                            <input id="input-appt-doctor" name="doctor" type="text" placeholder="Enter doctor's name" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="input-appt-hospital">Hospital</label>
+                            <input id="input-appt-hospital" name="hospital" type="text" placeholder="Enter hospital name" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="input-appt-type">Appointment Type</label>
+                            <select id="input-appt-type" name="appointment-type" required>
+                                <option value="" disabled selected>Select appointment type...</option>
+                                <option value="Consultation">Consultation</option>
+                                <option value="Follow-up">Follow-up</option>
+                                <option value="Routine Checkup">Routine Checkup</option>
+                                <option value="Emergency">Emergency</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-field" style="grid-column: 1 / -1;">
+                            <label for="input-appt-desc">Description</label>
+                            <textarea id="input-appt-desc" name="description" rows="3" placeholder="Additional details about the appointment" required></textarea>
+                        </div>
+                    </div>
+                    <div class="edit-actions">
+                        <button type="submit" class="btn-primary">Schedule</button>
+                        <button type="button" id="cancel-schedule-btn" class="btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
