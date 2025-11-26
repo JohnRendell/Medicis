@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <base href="/pages/User/"> 
+    <link rel="stylesheet" href="styles.css" />
+    <title>Billing - Medicis+</title>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-container">
+            <h1 class="logo">Medicis +</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a class="nav-btn" href="Info_Dashboard.html"><span class="icon">👤</span> Patient Profile</a></li>
+                <li><a class="nav-btn" href="Appointment Dashboard.html"><span class="icon">📅</span> Appointments</a></li>
+                <li><a class="nav-btn active" href="Billing_Receipt_Dashboard.html"><span class="icon">💳</span> Billing</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="footer-btn"><span class="icon">❓</span> Support</button>
+            <div class="account-info">
+                <button class="footer-btn"><span class="icon">👤</span> My Account</button>
+                <p class="patient-id">Patient ID: <span id="patient-id-display">1234</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Billing (copied) -->
+        <div id="billing" class="page active">
+            <div class="page-header" style="position: relative;">
+                <h1>Billing Overview</h1>
+                <p class="patient-id-header">Account for <span id="billing-user-name">Juan Dela Cruz</span></p>
+                <button class="btn-secondary signout-top" title="Sign out" style="position: absolute; top: 15px; right: 10px;">Sign Out</button>
+                <hr>
+            </div>
+            <div class="billing-container">
+                <div class="billing-summary">
+                    <div class="summary-card">
+                        <h3>Total Amount Due</h3>
+                        <p class="amount due">₱7,300.00</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Total Paid</h3>
+                        <p class="amount paid">₱8,200.00</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Outstanding Balance</h3>
+                        <p class="amount balance">₱-900.00</p>
+                    </div>
+                </div>
+                <div class="billing-items">
+                    <h2>Detailed Billing Items</h2>
+                    <table class="billing-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Provider</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billing-tbody">
+                            <!-- populated by script.js -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="billing-actions">
+                    <button class="btn-primary" id="pay-bill-btn">Pay Bill</button>
+                    <button class="btn-secondary" id="download-receipt-btn">Download Receipt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
