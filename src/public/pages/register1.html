@@ -24,19 +24,19 @@
     <div class="right">
         <h2>Create Account</h2>
 
-        <form>
+        <form action="/pages/register2" id="registerForm" method="post">
             <label>Username</label>
-            <input type="text" required>
+            <input type="text" name="username" required>
 
             <label>Password</label>
-            <input type="password" required>
+            <input type="password" name="password" required>
 
             <label>Re-enter Password</label>
-            <input type="password" required>
+            <input type="password" name="confirm_pass" required>
 
             <div class="btn-row">
-                <button class="btn-secondary">Back</button>
-                <button class="btn-primary">Next</button>
+                <button class="btn-secondary" type="button">Back</button>
+                <button class="btn-primary" name="submit" type="submit">Next</button>
             </div>
         </form>
     </div>
@@ -45,3 +45,32 @@
 
 </body>
 </html>
+
+<script>
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+        const username = this.username.value;
+        const password = this.password.value;
+        const confirm_pass = this.confirm_pass.value;
+
+        if (!username || !password || !confirm_pass) {
+            e.preventDefault();
+            alert("Fields are empty");
+            return;
+        }
+        if (username.length <= 4) {
+            e.preventDefault();
+            alert("Username should be more than 4 characters");
+            return;
+        }
+        if (password.length <= 4) {
+            e.preventDefault();
+            alert("Password should be more than 4 characters");
+            return;
+        }
+        if (password !== confirm_pass) {
+            e.preventDefault();
+            alert("Passwords don't match");
+            return;
+        }
+    });
+</script>

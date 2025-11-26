@@ -24,28 +24,28 @@
     <div class="right">
         <h2>Registration</h2>
 
-        <form>
+        <form action="/pages/register_account" id="registerForm" method="post">
             <label>Name</label>
-            <input type="text" required>
+            <input type="text" name="name" required>
 
             <label>Gender</label>
-            <input type="text" placeholder="Male / Female" required>
+            <input type="text" name="gender" placeholder="Male / Female" required>
 
             <label>Birthdate</label>
-            <input type="date" required>
+            <input type="date" name="date" required>
 
             <label>Address</label>
-            <input type="text" required>
+            <input type="text" name="address" required>
 
             <label>Email</label>
-            <input type="email" required>
+            <input type="email" name="email" required>
 
             <label>Phone #</label>
-            <input type="text" required>
+            <input type="text" name="phone_num" required>
 
             <div class="btn-row">
-                <button class="btn-secondary">Back</button>
-                <button class="btn-primary">Confirm</button>
+                <button class="btn-secondary" type="button">Back</button>
+                <button class="btn-primary" type="confirm">Confirm</button>
             </div>
         </form>
     </div>
@@ -54,3 +54,39 @@
 
 </body>
 </html>
+
+<script>
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+        const name = this.name.value;
+        const gender = this.gender.value;
+        const date = this.date.value;
+        const address = this.address.value;
+        const email = this.email.value;
+        const phone_num = this.phone_num.value;
+
+        if(!name || !gender || !date || !address || !email || !phone_num){
+            e.preventDefault();
+            alert("Fields are empty");
+            return
+        }
+        
+        if(name.length <= 4){
+            e.preventDefault();
+            alert("Name must be atleast five characters or above.");
+            return
+        }
+
+        if(address.length <= 4){
+            e.preventDefault();
+            alert("Address must be atleast five characters or above.");
+            return
+        }
+
+        if(phone_num.length <= 4){
+            e.preventDefault();
+            alert("Invalid phone number")
+            return
+        }
+    
+    });
+</script>

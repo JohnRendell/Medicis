@@ -3,32 +3,47 @@
 <div class="login-container">
     
     <div class="left-panel">
-        <img src="../images/medicis_logo.png" class="logo">
+        <img src="/public/images/medicis_logo.png" class="logo">
         <h1 class="brand">Medicis</h1>
     </div>
 
     <div class="right-panel">
         <h2>Sign in to <span class="blue">Medicis</span></h2>
 
-        <label>Username</label>
-        <input type="text">
-
-        <label>Password</label>
-        <input type="password">
-
-        <button class="primary-btn">Sign In</button>
-
-        <p class="center-text">or</p>
-
-        <button class="google-btn">
-            <img src="../images/google_logo.png" class="google-icon">
-            Sign in with Google
-        </button>
-
-        <p class="footer-text">
-            Don't have an account?
-            <a href="#">Create Account</a>
-        </p>
+        <form id="formLogin" action="/pages/dashboard" method="post">
+            <label>Username</label>
+            <input type="text" name="username">
+            
+            <label>Password</label>
+            <input type="password" name="password">
+            
+            <button class="primary-btn" type="submit" name="submit">Sign In</button>
+            
+            <p class="center-text">or</p>
+            
+            <button class="google-btn" type="button">
+                <img src="/public/images/g-logo.png" class="google-icon">
+                Sign in with Google
+            </button>
+            
+            <p class="footer-text">
+                Don't have an account?
+                <a href="/pages/register1" type="button">Create Account</a>
+            </p>
+        </form>
     </div>
 
 </div>
+
+<script>
+    document.getElementById("formLogin").addEventListener("submit", function(e){
+        const username = this.username.value;
+        const password = this.password.value;
+
+        if(!username || !password){
+            e.preventDefault();
+            alert("fields are empty")
+            return
+        }
+    })
+</script>
