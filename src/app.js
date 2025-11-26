@@ -2,8 +2,7 @@ const express = require("express");
 const app = express();
 const { createServer } = require("http");
 const expressServer = createServer(app);
-const path = require("path");
-
+// node src/app.js
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "public")));
