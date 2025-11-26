@@ -1,14 +1,14 @@
-// sample data for demo
-const patientData = {
-    id: '1234',
-    name: 'Juan Dela Cruz',
-    gender: 'Male',
-    age: 36,
-    dob: '1945-12-12',
-    address: 'Mars',
-    email: 'jdelacruz@gmail.com',
-    phone: '09123456789'
-};
+// // sample data for demo
+// const patientData = {
+//     id: '1234',
+//     name: 'Juan Dela Cruz',
+//     gender: 'Male',
+//     age: 36,
+//     dob: '1945-12-12',
+//     address: 'Mars',
+//     email: 'jdelacruz@gmail.com',
+//     phone: '09123456789'
+// };
 
 let appointmentData = [
     { id: 'APT-010', date: '2025-11-10', time: '09:00 AM', doctor: 'Dr. Maria Reyes', status: 'Completed' },
@@ -29,13 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const navButtons = Array.from(document.querySelectorAll('.nav-btn'));
     const pages = Array.from(document.querySelectorAll('.page'));
     
-    const inputName = document.getElementById('input-name');
-    const inputGender = document.getElementById('input-gender');
-    const inputAge = document.getElementById('input-age');
-    const inputDob = document.getElementById('input-dob');
-    const inputAddress = document.getElementById('input-address');
-    const inputEmail = document.getElementById('input-email');
-    const inputPhone = document.getElementById('input-phone');
+
+const inputName = document.getElementById('input-name');
+const inputSex = document.getElementById('input-sex');
+const inputAge = document.getElementById('input-age');
+const inputdate_of_birth = document.getElementById('input-date_of_birth');
+const inputAddress = document.getElementById('input-address');
+const inputEmail = document.getElementById('input-email');
+const inputPhone = document.getElementById('input-phone');
+const editOverlay = document.getElementById('edit-overlay');
+const cancelEditBtn = document.getElementById('cancel-edit-btn');
+const editForm = document.getElementById('edit-form');
+const updateInfoBtn = document.getElementById('update-info-btn');
 
     // Schedule appointment modal elements
     const scheduleApptOverlay = document.getElementById('schedule-appt-overlay');
@@ -47,10 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputApptDesc = document.getElementById('input-appt-desc');
     const cancelScheduleBtn = document.getElementById('cancel-schedule-btn');
 
-    // Edit patient information modal elements
-    const editOverlay = document.getElementById('edit-overlay');
-    const editForm = document.getElementById('edit-form');
-    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
 
     // Explicitly hide modals on page load to prevent auto open
     if (scheduleApptOverlay) {
@@ -81,32 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/${d.getFullYear()}`;
     }
 
-    function renderPatientInfo() {
-        document.getElementById('patient-name-header').textContent = (patientData.name || '').toUpperCase();
-        document.getElementById('patient-id-header').textContent = patientData.id || '';
-        document.getElementById('patient-id-display') && (document.getElementById('patient-id-display').textContent = patientData.id || '');
-        document.getElementById('info-name') && (document.getElementById('info-name').textContent = patientData.name || '');
-        document.getElementById('info-id') && (document.getElementById('info-id').textContent = patientData.id || '');
-        document.getElementById('info-gender') && (document.getElementById('info-gender').textContent = patientData.gender || '');
-        document.getElementById('info-age') && (document.getElementById('info-age').textContent = patientData.age ?? '');
-        
-        if (document.getElementById('info-dob')) {
-            const dob = patientData.dob || '';
-            if (/^\d{4}-\d{2}-\d{2}/.test(dob)) {
-                const d = new Date(dob);
-                document.getElementById('info-dob').textContent = isNaN(d) ? dob : `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/${d.getFullYear()}`;
-            } else {
-                document.getElementById('info-dob').textContent = dob;
-            }
-        }
-        
-        document.getElementById('info-address') && (document.getElementById('info-address').textContent = patientData.address || '');
-        document.getElementById('info-email') && (document.getElementById('info-email').textContent = patientData.email || '');
-        document.getElementById('info-phone') && (document.getElementById('info-phone').textContent = patientData.phone || '');
 
-        const apptName = document.getElementById('appt-user-name'); if (apptName) apptName.textContent = patientData.name || '';
-        const billingName = document.getElementById('billing-user-name'); if (billingName) billingName.textContent = patientData.name || '';
-    }
 
     function renderAppointments() {
         const tbody = document.getElementById('appointments-tbody');
@@ -287,73 +264,134 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Appointment scheduled successfully!');
     });
 
-    // ===== SIGN OUT =====
-    document.querySelectorAll('.signout-top').forEach(btn => {
-        btn.addEventListener('click', e => {
-            e.preventDefault();
-            localStorage.removeItem('authUser');
-            alert('Signed out (demo)');
-            window.location.reload();
-        });
-    });
 
     // Other button alerts
     document.getElementById('pay-bill-btn')?.addEventListener('click', () => alert('Payment feature coming soon!'));
     document.getElementById('download-receipt-btn')?.addEventListener('click', () => alert('Download receipt feature coming soon!'));
 
-    // Patient Info Modal handling
-    function showEditForm() {
-        if (!editOverlay) return;
-        inputName && (inputName.value = patientData.name || '');
-        inputGender && (inputGender.value = patientData.gender || '');
-        inputAge && (inputAge.value = patientData.age || '');
-        inputDob && (inputDob.value = patientData.dob || '');
-        inputAddress && (inputAddress.value = patientData.address || '');
-        inputEmail && (inputEmail.value = patientData.email || '');
-        inputPhone && (inputPhone.value = patientData.phone || '');
-        
-        editOverlay.hidden = false;
-        editOverlay.style.display = 'flex';
-        setTimeout(() => inputName?.focus(), 50);
-    }
+function showEditForm() {
+    if (!editOverlay) return;
 
-    function hideEditForm() {
-        if (!editOverlay) return;
-        editOverlay.hidden = true;
-        editOverlay.style.display = 'none';
-        editForm?.reset();
-    }
+    // Populate the form fields with the existing patient data
+    inputName.value = patientData.name || '';
+    inputSex.value = patientData.sex || '';
+    inputAge.value = patientData.age || '';
+    inputdate_of_birth.value = patientData?.date_of_birth || '';
+    inputAddress.value = patientData.address || '';
+    inputEmail.value = patientData.email || '';
+    inputPhone.value = patientData.phone || '';
 
-    document.getElementById('update-info-btn')?.addEventListener('click', e => {
-        e.preventDefault();
-        showEditForm();
+
+    editOverlay.hidden = false;
+    editOverlay.style.display = 'flex';
+
+    setTimeout(() => inputName.focus(), 50);
+}
+
+function hideEditForm() {
+    if (!editOverlay) return;
+
+
+    editOverlay.hidden = true;
+    editOverlay.style.display = 'none';
+
+    editForm?.reset();
+}
+
+updateInfoBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showEditForm();
+});
+
+
+if (editOverlay) {
+    editOverlay.addEventListener('click', (e) => {
+        if (e.target === editOverlay) hideEditForm();
     });
+}
 
-    cancelEditBtn?.addEventListener('click', e => {
-        e.preventDefault();
+cancelEditBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    hideEditForm();
+});
+
+editForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+
+    const currentFormData = {
+        name: inputName.value.trim(),
+        sex: inputSex.value,
+        age: inputAge.value,
+        date_of_birth: inputdate_of_birth.value,
+        address: inputAddress.value.trim(),
+        email: inputEmail.value.trim(),
+        phone: inputPhone.value.trim(),
+    };
+
+
+    const dataToSend = {};
+    let changesDetected = false;
+
+    for (const key in currentFormData) {
+
+        if (String(currentFormData[key]) !== String(patientData[key] || '')) {
+            changesDetected = true;
+            if (currentFormData[key] === '') {
+                dataToSend[key] = null;
+            } else {
+                dataToSend[key] = currentFormData[key];
+            }
+        }
+    }
+    
+    if (!changesDetected) {
+        alert('No changes detected.');
         hideEditForm();
-    });
+        return;
+    }
 
-    if (editOverlay) {
-        editOverlay.addEventListener('click', e => {
-            if (e.target === editOverlay) hideEditForm();
+
+    Object.assign(patientData, dataToSend);
+
+
+    try {
+        const response = await fetch('/update-patient-info', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+
+            body: JSON.stringify(dataToSend), 
         });
-    }
 
-    editForm?.addEventListener('submit', e => {
-        e.preventDefault();
-        patientData.name = inputName?.value || patientData.name;
-        patientData.gender = inputGender?.value || patientData.gender;
-        patientData.age = inputAge?.value || patientData.age;
-        patientData.dob = inputDob?.value || patientData.dob;
-        patientData.address = inputAddress?.value || patientData.address;
-        patientData.email = inputEmail?.value || patientData.email;
-        patientData.phone = inputPhone?.value || patientData.phone;
-        
-        renderPatientInfo();
-        hideEditForm();
-        alert('Patient information updated successfully!');
-    });
+       if (response.ok) {
+            
+
+            try {
+
+                renderPatientInfo(); 
+                hideEditForm(); 
+                alert('Patient information updated successfully!');
+            } catch (renderError) {
+                console.error("Client-side rendering failed after successful update:", renderError);
+
+                alert('Patient information updated successfully! (Note: A display error occurred.)');
+
+                hideEditForm(); 
+            }
+
+            
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update patient information.');
+        }
+    } catch (error) {
+        console.error('Final Error during fetch or server failure:', error);
+        alert(`Error updating patient information: ${error.message}`);
+    }
+});
+
 
     window.addEventListener('keydown', e => {
         if (e.key === 'Escape' && editOverlay && !editOverlay.hasAttribute('hidden')) {

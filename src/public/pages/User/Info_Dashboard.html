@@ -14,9 +14,9 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a class="nav-btn active" href="Info_Dashboard.html"><span class="icon">👤</span> Patient Profile</a></li>
-                <li><a class="nav-btn" href="Appointment Dashboard.html"><span class="icon">📅</span> Appointments</a></li>
-                <li><a class="nav-btn" href="Billing_Receipt_Dashboard.html"><span class="icon">💳</span> Billing</a></li>
+                <li><a class="nav-btn" href="/patientinfo"><span class="icon">👤</span> Patient Profile</a></li>
+                <li><a class="nav-btn active" href="/appointment"><span class="icon">📅</span> Appointments</a></li>
+                <li><a class="nav-btn" href="/billing"><span class="icon">💳</span> Billing</a></li>
             </ul>
         </nav>
         <div class="sidebar-footer">
@@ -34,7 +34,7 @@
             <div class="page-header" style="position: relative;">
                 <h1 id="patient-name-header">JUAN DELA CRUZ</h1>
                 <p class="patient-id-header">Patient ID: <span id="patient-id-header">1234</span></p>
-                <button class="btn-secondary signout-top" title="Sign out" style="position: absolute; top: 15px; right: 10px;">Sign Out</button>
+                <button id="signout-button" class="btn-secondary signout-top" title="Sign out" style="position: absolute; top: 15px; right: 10px;">Sign Out</button>
                 <hr>
             </div>
             <div class="patient-info-container">
@@ -44,71 +44,153 @@
                 <div class="patient-details">
                     <h2>Patient Information</h2>
                     <div class="info-grid">
-                        <div class="info-row"><label>Name:</label><span id="info-name">Dela Cruz, Juan</span></div>
-                        <div class="info-row"><label>ID:</label><span id="info-id">1234</span></div>
-                        <div class="info-row"><label>Gender:</label><span id="info-gender">Male</span></div>
-                        <div class="info-row"><label>Age:</label><span id="info-age">36</span></div>
-                        <div class="info-row"><label>Date of Birth:</label><span id="info-dob">12/12/1945</span></div>
-                        <div class="info-row"><label>Address:</label><span id="info-address">Mars</span></div>
-                        <div class="info-row"><label>Email:</label><span id="info-email">jdelacruz@gmail.com</span></div>
-                        <div class="info-row"><label>Phone:</label><span id="info-phone">09123456789</span></div>
+                        <div class="info-row"><label>Name: </label><span id="info-name"></span></div>
+                        <div class="info-row"><label>ID: </label><span id="info-id"></span></div>
+                        <div class="info-row"><label>Sex: </label><span id="info-sex"></span></div>
+                        <div class="info-row"><label>Age: </label><span id="info-age"></span></div>
+                        <div class="info-row"><label>Date of Birth: </label><span id="info-date_of_birth"></span></div>
+                        <div class="info-row"><label>Address: </label><span id="info-address"></span></div>
+                        <div class="info-row"><label>Email: </label><span id="info-email"></span></div>
+                        <div class="info-row"><label>Phone: </label><span id="info-phone"></span></div>
+
                     </div>
                     <button id="update-info-btn" class="btn-primary">Update Information</button>
                 </div>
             </div>
         </div>
 
-        <!-- Edit Patient Information Modal (keep it here) -->
-        <div id="edit-overlay" class="edit-overlay" hidden>
-            <div class="edit-panel" role="dialog" aria-modal="true" aria-labelledby="edit-title">
-                <div class="edit-header">
-                    <h2 id="edit-title">Update Patient Information</h2>
-                </div>
-                <form id="edit-form" class="edit-form" novalidate>
-                    <div class="form-grid">
-                        <div class="form-field">
-                            <label for="input-name">Full Name</label>
-                            <input id="input-name" name="name" type="text" placeholder="Enter full name" required>
-                        </div>
-                        <div class="form-field">
-                            <label for="input-gender">Gender</label>
-                            <select id="input-gender" name="gender" required>
-                                <option value="">Select gender...</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label for="input-age">Age</label>
-                            <input id="input-age" name="age" type="number" min="0" max="150" placeholder="Enter age">
-                        </div>
-                        <div class="form-field">
-                            <label for="input-dob">Date of Birth</label>
-                            <input id="input-dob" name="dob" type="date">
-                        </div>
-                        <div class="form-field" style="grid-column: 1 / -1;">
-                            <label for="input-address">Address</label>
-                            <input id="input-address" name="address" type="text" placeholder="Enter address">
-                        </div>
-                        <div class="form-field">
-                            <label for="input-email">Email</label>
-                            <input id="input-email" name="email" type="email" placeholder="Enter email address">
-                        </div>
-                        <div class="form-field">
-                            <label for="input-phone">Phone Number</label>
-                            <input id="input-phone" name="phone" type="tel" placeholder="Enter phone number">
-                        </div>
-                    </div>
-                    <div class="edit-actions">
-                        <button type="submit" id="save-edit-btn" class="btn-primary">Save Changes</button>
-                        <button type="button" id="cancel-edit-btn" class="btn-secondary">Cancel</button>
-                    </div>
-                </form>
-            </div>
+      <!-- Edit Patient Information Modal (keep it here) -->
+<div id="edit-overlay" class="edit-overlay" hidden>
+    <div class="edit-panel" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+        <div class="edit-header">
+            <h2 id="edit-title">Update Patient Information</h2>
         </div>
+        <form id="edit-form" class="edit-form" novalidate>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label for="input-name">Full Name</label>
+                    <input id="input-name" name="name" type="text" placeholder="Enter full name" required>
+                </div>
+                <div class="form-field">
+                    <label for="input-sex">Sex</label>
+                    <select id="input-sex" name="sex" required>
+                        <option value="">Select Sex...</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="input-age">Age</label>
+                    <input id="input-age" name="age" type="number" min="0" max="150" placeholder="Enter age">
+                </div>
+                <div class="form-field">
+                    <label for="input-date_of_birth">Date of Birth</label>
+                    <input id="input-date_of_birth" name="date_of_birth" type="date">
+                </div>
+                <div class="form-field" style="grid-column: 1 / -1;">
+                    <label for="input-address">Address</label>
+                    <input id="input-address" name="address" type="text" placeholder="Enter address">
+                </div>
+                <div class="form-field">
+                    <label for="input-email">Email</label>
+                    <input id="input-email" name="email" type="email" placeholder="Enter email address">
+                </div>
+                <div class="form-field">
+                    <label for="input-phone">Phone Number</label>
+                    <input id="input-phone" name="phone" type="tel" placeholder="Enter phone number">
+                </div>
+            </div>
+            <div class="edit-actions">
+                <button type="submit" id="save-edit-btn" class="btn-primary">Save Changes</button>
+                <button type="button" id="cancel-edit-btn" class="btn-secondary">Cancel</button>
+            </div>
+        </form>
     </div>
+</div>
+
 
   <script src="script.js"></script>
+  <script>
+        function renderPatientInfo() {
+        document.getElementById('patient-name-header').textContent = (patientData.name || '').toUpperCase();
+        document.getElementById('patient-id-header').textContent = patientData.patient_id || '';
+        document.getElementById('patient-id-display') && (document.getElementById('patient-id-display').textContent = patientData.patient_id || '');
+        document.getElementById('info-name') && (document.getElementById('info-name').textContent = patientData.name || '');
+        document.getElementById('info-id') && (document.getElementById('info-id').textContent = patientData.user_id || '');
+        document.getElementById('info-sex') && (document.getElementById('info-sex').textContent = patientData.sex || '');
+        document.getElementById('info-age') && (document.getElementById('info-age').textContent = patientData.age ?? '');
+        
+        if (document.getElementById('info-date_of_birth')) {
+            const date_of_birth = patientData.date_of_birth || '';
+            if (/^\d{4}-\d{2}-\d{2}/.test(date_of_birth)) {
+                const d = new Date(date_of_birth);
+                document.getElementById('info-date_of_birth').textContent = isNaN(d) ? date_of_birth : `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/${d.getFullYear()}`;
+            } else {
+                document.getElementById('info-date_of_birth').textContent = date_of_birth;
+            }
+        }
+        
+        document.getElementById('info-address') && (document.getElementById('info-address').textContent = patientData.address || '');
+        document.getElementById('info-email') && (document.getElementById('info-email').textContent = patientData.email || '');
+        document.getElementById('info-phone') && (document.getElementById('info-phone').textContent = patientData.phone || '');
+
+        const apptName = document.getElementById('appt-user-name'); if (apptName) apptName.textContent = patientData.name || '';
+        const billingName = document.getElementById('billing-user-name'); if (billingName) billingName.textContent = patientData.name || '';
+    }
+let patientData = {}; 
+
+async function loadPatientInfo() {
+  try {
+    const response = await fetch('/loadpatientinfo');
+    if (!response.ok) throw new Error('Failed to fetch patient info');
+    patientData = await response.json(); 
+    renderPatientInfo(); 
+    console.log(patientData);
+  } catch (error) {
+    console.error('Error fetching patient info:', error);
+  }
+}
+document.addEventListener('DOMContentLoaded', loadPatientInfo);
+
+async function Logout() {
+    try {
+        const response = await fetch('/logout', {
+            method: 'GET',
+            credentials: 'include',
+
+            redirect: 'follow' 
+        });
+        if (response.ok) {
+            window.location.href = '/'; 
+        } else if (response.status === 302) {
+            const redirectUrl = response.headers.get('Location');
+            if (redirectUrl) {
+                console.log("Redirecting manually via Location header:", redirectUrl);
+                window.location.href = redirectUrl;
+            } else {
+
+                window.location.href = '/'; 
+            }
+
+        } else {
+
+            alert(`Logout failed with status ${response.status}.`);
+        }
+    } catch (error) {
+        console.error('Network error during sign out:', error);
+        alert('A network error occurred during sign out.');
+    }
+}
+
+const signoutButton = document.getElementById('signout-button');
+
+if (signoutButton) {
+    signoutButton.addEventListener('click', (e) => {
+        e.preventDefault(); 
+        Logout();
+    });
+}
+
+</script>
 </body>
 </html>
