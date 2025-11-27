@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Diagnosis - Medicis+</title>
+    <link rel="stylesheet" href="/pages/Staff/diagnosis.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar" aria-label="Main navigation">
+            <div class="logo">
+                <img src="/images/medicis_logo.png" alt="Medicis+ Logo">
+                <span>Medicis+</span>
+            </div>
+
+            <div class="menu">
+                <a class="menu-item" href="./Patient_Info.html">
+                    <span class="icon">👥</span>
+                    <span class="menu-text">Patients</span>
+                </a>
+                <a class="menu-item" href="./Appointments.html">
+                    <span class="icon">📅</span>
+                    <span class="menu-text">Appointments</span>
+                </a>
+                <a class="menu-item" href="./Billings.html">
+                    <span class="icon">💳</span>
+                    <span class="menu-text">Billings</span>
+                </a>
+            </div>
+
+            <div class="footer-menu">
+                <a class="menu-item" href="./Support.html">
+                    <span class="icon">❓</span>
+                    <span class="menu-text">Support</span>
+                </a>
+
+                <!-- replaced: stack the label and staff id vertically -->
+                <a class="menu-item" href="./MyAccount.html">
+                    <span class="icon">👤</span>
+                    <div class="menu-labels">
+                        <span class="menu-text">My Account</span>
+                        <span class="staff-id">Staff ID: 1234</span>
+                    </div>
+                </a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="page-inner">
+                <header class="dashboard-header">
+                    <h1>Diagnosis</h1>
+                    <p class="welcome-text">Welcome Back, <span class="doctor-name">Dr. Nigel Ung</span></p>
+                </header>
+
+                <section class="summary-card">
+                    <div class="summary-left">
+                        <div class="patient-name">Name: <strong>Juan Dela Cruz</strong></div>
+                        <div class="patient-id">Patient ID: <strong>1234</strong></div>
+                        <div class="meta-row">
+                            <div>Age: <strong>36</strong></div>
+                            <div>Gender: <strong>Male</strong></div>
+                        </div>
+                    </div>
+                    <div class="summary-right">
+                        <div class="avatar-circle" aria-hidden="true"></div>
+                    </div>
+                </section>
+
+                <section class="diagnosis-section">
+                    <h2>Patient's Diagnosis Summary</h2>
+
+                    <div class="diagnosis-card">
+                        <p class="diagnosis-text">
+                            Juan Dela Cruz (Patient ID: 1234) reported symptoms of fever, headache, body weakness,
+                            and a dry cough. The system analysis and doctor's review indicate influenza as the
+                            most likely cause with no complications observed. Prescribed: Paracetamol 500 mg
+                            every 6 hours and cough syrup twice daily. Patient advised to rest, hydrate and monitor temperature.
+                        </p>
+
+                        <div class="three-cols">
+                            <div class="col">
+                                <h3>General Symptoms</h3>
+                                <p>Fever, headache, body weakness, dry cough</p>
+                            </div>
+                            <div class="col">
+                                <h3>Possible Disease</h3>
+                                <p>Influenza (82%)<br>Viral Upper Respiratory Infection (70%)</p>
+                            </div>
+                            <div class="col">
+                                <h3>Assessment</h3>
+                                <p>Symptoms indicate influenza. No complications observed.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="actions-row">
+                        <a class="back-link" href="/pages/Staff/Patient_Info.html">← Back to Patient</a>
+                        <button class="update-btn" type="button">Update Diagnosis</button>
+                    </div>
+                </section>
+
+                <div class="sign-out-container">
+                    <button class="sign-out-btn" type="button">Sign Out</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

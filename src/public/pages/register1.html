@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Step 1</title>
-    <link rel="stylesheet" href="register.css">
-    <base href="/pages">
+    <link rel="stylesheet" href="../pages/register.css">
 </head>
 <body>
 
@@ -16,7 +15,7 @@
         <img src="../images/nurse_holding_hand.png" class="bg-img">
         <div class="logo-box">
             <img src="../images/medicis_logo.png" class="logo">
-            <h1>Medicis</h1>
+            <h1><span style="color: rgba(39, 0, 105);">M</span>edicis</h1>
         </div>
     </div>
 
@@ -25,18 +24,18 @@
         <h2>Create Account</h2>
 
         <form>
-            <label>Username</label>
-            <input type="text" required>
+            <label for="username">Username</label>
+            <input id="username" type="text" required>
 
-            <label>Password</label>
-            <input type="password" required>
+            <label for="pass1">Password</label>
+            <input id="pass1" type="password" required>
 
-            <label>Re-enter Password</label>
-            <input type="password" required>
+            <label for="pass2">Re-enter Password</label>
+            <input id="pass2" type="password" required>
 
             <div class="btn-row">
-                <button class="btn-secondary">Back</button>
-                <button class="btn-primary">Next</button>
+                <a href="/pages/login.html" class="btn-secondary">Back</a>
+                <button class="btn-primary" type="submit">Next</button>
             </div>
         </form>
     </div>

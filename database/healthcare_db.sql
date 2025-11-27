@@ -1,4 +1,4 @@
--- --------------------------------------------------------
+healthcare_dbhealthcare_dbuser_account-- --------------------------------------------------------
 -- Host:                         127.0.0.1
 -- Server version:               8.0.30 - MySQL Community Server - GPL
 -- Server OS:                    Win64

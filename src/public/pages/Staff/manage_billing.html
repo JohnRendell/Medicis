@@ -3,33 +3,32 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Your Appointments - Medicis+</title>
-  <link rel="stylesheet" href="/pages/Staff/appointments.css">
+  <title>Billing Overview - Medicis+</title>
+  <link rel="stylesheet" href="/pages/Staff/billings.css">
 </head>
 <body>
   <div class="container">
     <nav class="sidebar" aria-label="Main navigation">
       <div class="logo">
-        <img src="/images/medicis_logo.png" alt="Medicis+ Logo">
+        <img src=/images/medicis_logo.png alt="Medicis+ Logo">
         <span>Medicis+</span>
       </div>
 
       <div class="menu">
-        <a class="menu-item" href="/pages/Staff/Patient_Info.html">
-          <span class="icon">👥</span>
-          <span class="menu-text">Patients</span>
-        </a>
+                <a class="menu-item" href="/pages/Staff/Patient_Info.html">
+                    <span class="icon">👥</span>
+                    <span class="menu-text">Patients</span>
+                </a>
 
-        <a class="menu-item active" href="/pages/Staff/Appointments.html">
-          <span class="icon">📅</span>
-          <span class="menu-text">Appointments</span>
-        </a>
+                <a class="menu-item" href="/pages/Staff/Appointments.html">
+                    <span class="icon">📅</span>
+                    <span class="menu-text">Appointments</span>
+                </a>
 
-        <a class="menu-item" href="/pages/Staff/manage_billing.html">
-          <span class="icon">💳</span>
-          <span class="menu-text">Billing</span>
-        </a>
-      </div>
+                <a class="menu-item active" href="/pages/Staff/manage_billing.html">
+                    <span class="icon">💳</span>
+                    <span class="menu-text">Billing</span>
+                </a>
 
       <div class="footer-menu">
         <a class="menu-item" href="./Support.html">
@@ -51,36 +50,37 @@
       <div class="page-inner">
         <header class="dashboard-header header-row">
           <div>
-            <h1>Your Appointments</h1>
-            <p class="welcome-text">Welcome Back, <span class="doctor-name">Juan Dela Cruz</span></p>
+            <h1>Billing Overview</h1>
           </div>
           <div class="sign-out-container">
             <button class="sign-out-btn" type="button">Sign Out</button>
           </div>
         </header>
 
-        <section class="appointments-card">
-          <h3>Recent Appointments</h3>
+        <section class="billing-card">
+          <h3>Detailed Billing Items</h3>
 
           <div class="table-wrap">
-            <table class="appointments-table" aria-describedby="recent-appointments">
+            <table class="billing-table" aria-describedby="detailed-billing">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Date</th>
-                  <th>Time</th>
-                  <th>Patient</th>
+                  <th>Description</th>
+                  <th>Provider</th>
+                  <th>Amount</th>
                   <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 <!-- backend will inject rows here -->
                 <tr class="empty">
-                  <td colspan="5">No appointments to display</td>
+                  <td colspan="5">No billing records to display</td>
                 </tr>
               </tbody>
             </table>
           </div>
+
+          <button class="manage-btn" type="button">Manage</button>
         </section>
       </div>
     </main>
