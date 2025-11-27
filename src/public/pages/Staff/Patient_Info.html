@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Information - Medicis+</title>
+    <link rel="stylesheet" href="/pages/Staff/patientInfo.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar / Main Navigation -->
+        <nav class="sidebar" aria-label="Main navigation">
+            <div class="logo">
+               <img src="/images/medicis_logo.png" alt="Medicis+ Logo">
+               <span>Medicis+</span>
+            </div>
+
+            <div class="menu">
+                <a class="menu-item active" href="/pages/Staff/Patient_Info.html">
+                    <span class="icon">👥</span>
+                    <span class="menu-text">Patients</span>
+                </a>
+
+                <a class="menu-item" href="/pages/Staff/Appointments.html">
+                    <span class="icon">📅</span>
+                    <span class="menu-text">Appointments</span>
+                </a>
+
+                <a class="menu-item" href="/pages/Staff/manage_billing.html">
+                    <span class="icon">💳</span>
+                    <span class="menu-text">Billing</span>
+                </a>
+            </div>
+
+            <div class="footer-menu">
+                <a class="menu-item" href="./Support.html">
+                    <span class="icon">❓</span>
+                    <span class="menu-text">Support</span>
+                </a>
+
+                <a class="menu-item" href="./MyAccount.html">
+                    <span class="icon">👤</span>
+                    <div class="menu-labels">
+                        <span class="menu-text">My Account</span>
+                        <span class="staff-id">Staff ID: 1234</span>
+                    </div>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content (leave room for fixed sidebar) -->
+        <main class="main-content">
+            <div class="page-inner">
+                <header class="dashboard-header">
+                    <h1>Dashboard</h1>
+                    <p class="welcome-text">Welcome Back, <span class="doctor-name">Dr. Nigel Ung</span></p>
+                </header>
+
+                <!-- Action Cards -->
+                <div class="action-cards">
+                    <div class="card search-card">
+                        <h3>Search Patient</h3>
+                        <label for="patient-id">Enter Patient ID:</label>
+                        <input type="text" id="patient-id" placeholder="1234">
+                    </div>
+                    <div class="card diagnosis-card">
+                        <h3>Diagnosis</h3>
+                        <p>Check Patient Diagnosis</p>
+                        <!-- relative link to Diagnosis.html in same folder -->
+                        <a href="./Diagnosis.html" class="arrow-link" aria-label="Go to Diagnosis">➜</a>
+                    </div>
+                </div>
+
+                <!-- Patient Information Section -->
+                <section class="patient-info-section">
+                    <h2>Patient Information</h2>
+                    <div class="patient-card">
+                        <div class="patient-details">
+                            <div class="detail-row">
+                                <label>Name:</label>
+                                <span>Dela Cruz, Juan</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>ID:</label>
+                                <span>1234</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Gender:</label>
+                                <span>Male</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Age:</label>
+                                <span>36</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Date of Birth:</label>
+                                <span>12/12/1945</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Address :</label>
+                                <span>Mars</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Email :</label>
+                                <span>jdelacruz@gmail.com</span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Phone :</label>
+                                <span>09123456789</span>
+                            </div>
+                        </div>
+                        <div class="patient-avatar">
+                            <div class="avatar-circle" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                    <button class="update-btn" type="button">Update Information</button>
+                </section>
+
+                <!-- Sign Out Button -->
+                <div class="sign-out-container">
+                    <button class="sign-out-btn" type="button">Sign Out</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -10,6 +10,9 @@ const session = require('express-session');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use(session({
     secret: "mysecretkey",    
     resave: false,   
@@ -40,9 +43,8 @@ const db = require("./server/config/db");
 })();
 
 
-//entry point
-app.get("/", (req, res)=>{
-    res.sendFile(path.join(__dirname, "public", "pages", "login.html"));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "pages", "login.html"));
 });
 
 //routers
