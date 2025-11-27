@@ -48,11 +48,22 @@ app.get("/", (req, res) => {
 });
 
 //routers
-app.use("/redirect", require("./server/page_routes"))
-app.use("/user", require("./server/routes/userRoutes"));
-app.use("/patients", require("./server/routes/patientRoutes"));
+app.use("/redirect", require("./server/page_routes")) //->> 
+// dito pre yung mga usual pages natin like login, dashboard, sign in etc, 
+// nag lagay din ako ng safeguard since yung mga routes dito is 'get', 
+// pwede kang maredirect pero since may safe guard na, ire redirect sa root page pag invalid, 
+// halimbawa: /redirect/dashboard -> goes to user pero since di naman nag route via login, 
+// ire redirect dito yung root page.
 
-//404 page
+app.use("/user", require("./server/routes/userRoutes")); //->>
+//dito naman yung sa routing natin like post, patch, put, delete basically yung usual api natin.
+
+app.use("/patients", require("./server/routes/patientRoutes")); //->>
+//same as above dito
+
+//404 page -- pre eto yung invalid page, so kunwari nag type si user ng /redirect/test 
+// or any other route na di nage exist, ire redirect sa 404 page. Gumawa pala ako ng html file non, 
+// i design nalang nila Jerome
 app.use((req, res)=>{
     res.status(404).sendFile(path.join(__dirname, "./public/pages/404page.html"));
 })

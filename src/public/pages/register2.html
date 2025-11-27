@@ -23,28 +23,28 @@
     <div class="right">
         <h2>Registration</h2>
 
-					<label for="name">Name</label>
-					<input id="name" type="text" required>
+        <label for="name">Name</label>
+        <input id="name" type="text">
 
-					<label for="gender">Gender</label>
-					<input id="gender" type="text" placeholder="Male / Female" required>
+        <label for="gender">Gender</label>
+        <input id="gender" type="text" placeholder="Male / Female">
 
-					<label for="birth">Birthdate</label>
-					<input id="birth" type="date" required>
+        <label for="birth">Birthdate</label>
+        <input id="birth" type="date">
 
-					<label for="address">Address</label>
-					<input id="address" type="text" required>
+        <label for="address">Address</label>
+        <input id="address" type="text">
 
-					<label for="email">Email</label>
-					<input id="email" type="email" required>
+        <label for="email">Email</label>
+        <input id="email" type="email">
 
-					<label for="phone">Phone #</label>
-					<input id="phone" type="text" required>
+        <label for="phone">Phone #</label>
+        <input id="phone" type="number">
 
-					<div class="btn-row">
-							<button class="btn-secondary" type="button">Back</button>
-							<button class="btn-primary" type="submit">Confirm</button>
-					</div>
+        <div class="btn-row">
+                <button class="btn-secondary" type="button" onclick="go_back()">Back</button>
+                <button class="btn-primary" onclick="register2()">Confirm</button>
+        </div>
     </div>
 
 </div>
@@ -53,6 +53,9 @@
 </html>
 
 <script>
+    function go_back(){
+        window.location.href = "/redirect/create-account-part-1"
+    }
     async function register2(){
         try{
             let payload = {
