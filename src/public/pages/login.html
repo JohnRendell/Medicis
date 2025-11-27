@@ -17,15 +17,13 @@
         <div class="right-panel">
             <h2>Sign in to <span class="blue">Medicis</span></h2>
 
-            <form class="login-form" action="/login" method="post" novalidate>
-                <label for="username">Username</label>
-                <input id="username" name="username" type="text" required>
+						<label for="username">Username</label>
+						<input id="username" type="text" required>
 
-                <label for="password">Password</label>
-                <input id="password" name="password" type="password" required>
+						<label for="password">Password</label>
+						<input id="password" type="password" required>
 
-                <button type="submit" class="primary-btn">Sign In</button>
-            </form>
+						<button type="submit" class="primary-btn" onclick="login()">Sign In</button>
 
             <p class="center-text">or</p>
 
@@ -42,3 +40,33 @@
     </div>
 </body>
 </html>
+
+<script>
+    async function login(){
+        try{
+            let payload = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value
+            }
+
+            const result = await fetch("/user/login", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const res = await result.json();
+
+            if(!res.success){
+                alert(res.message);
+                return
+            }
+            window.location.href = res.redirect
+        }
+        catch(err){
+            alert(err);
+        }
+    }
+</script>

@@ -23,33 +23,65 @@
     <div class="right">
         <h2>Registration</h2>
 
-        <form>
-            <label for="name">Name</label>
-            <input id="name" type="text" required>
+					<label for="name">Name</label>
+					<input id="name" type="text" required>
 
-            <label for="gender">Gender</label>
-            <input id="gender" type="text" placeholder="Male / Female" required>
+					<label for="gender">Gender</label>
+					<input id="gender" type="text" placeholder="Male / Female" required>
 
-            <label for="birth">Birthdate</label>
-            <input id="birth" type="date" required>
+					<label for="birth">Birthdate</label>
+					<input id="birth" type="date" required>
 
-            <label for="address">Address</label>
-            <input id="address" type="text" required>
+					<label for="address">Address</label>
+					<input id="address" type="text" required>
 
-            <label for="email">Email</label>
-            <input id="email" type="email" required>
+					<label for="email">Email</label>
+					<input id="email" type="email" required>
 
-            <label for="phone">Phone #</label>
-            <input id="phone" type="text" required>
+					<label for="phone">Phone #</label>
+					<input id="phone" type="text" required>
 
-            <div class="btn-row">
-                <button class="btn-secondary" type="button">Back</button>
-                <button class="btn-primary" type="submit">Confirm</button>
-            </div>
-        </form>
+					<div class="btn-row">
+							<button class="btn-secondary" type="button">Back</button>
+							<button class="btn-primary" type="submit">Confirm</button>
+					</div>
     </div>
 
 </div>
 
 </body>
 </html>
+
+<script>
+    async function register2(){
+        try{
+            let payload = {
+                name: document.getElementById("name").value, 
+                gender: document.getElementById("gender").value, 
+                date: document.getElementById("birth").value, 
+                address: document.getElementById("address").value, 
+                email: document.getElementById("email").value, 
+                phone_num: document.getElementById("phone").value
+            }
+
+            const res = await fetch("/user/register2", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const res_json = await res.json();
+
+            if(!res_json.success){
+                alert(res_json.message)
+                return
+            }
+            window.location.href = res_json.redirect
+        }
+        catch(err){
+            alert(err);
+        }
+    }
+</script>

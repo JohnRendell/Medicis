@@ -23,24 +23,53 @@
     <div class="right">
         <h2>Create Account</h2>
 
-        <form>
-            <label for="username">Username</label>
-            <input id="username" type="text" required>
+				<label for="username">Username</label>
+				<input id="username" type="text">
 
-            <label for="pass1">Password</label>
-            <input id="pass1" type="password" required>
+				<label for="pass1">Password</label>
+				<input id="pass1" type="password">
 
-            <label for="pass2">Re-enter Password</label>
-            <input id="pass2" type="password" required>
+				<label for="pass2">Re-enter Password</label>
+				<input id="pass2" type="password">
 
-            <div class="btn-row">
-                <a href="/pages/login.html" class="btn-secondary">Back</a>
-                <button class="btn-primary" type="submit">Next</button>
-            </div>
-        </form>
+				<div class="btn-row">
+						<a href="/pages/login.html" class="btn-secondary">Back</a>
+						<button class="btn-primary" type="submit">Next</button>
+				</div>
     </div>
 
 </div>
 
 </body>
 </html>
+
+<script>
+    async function register(){
+        try{
+            let payload = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("pass1").value,
+                confirm_pass: document.getElementById("pass2").value
+            }
+
+            const register1 = await fetch("/user/register1", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json",
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const res = await register1.json();
+
+            if(!res.success){
+                alert(res.message)
+                return
+            }
+            window.location.href = res.redirect
+        }
+        catch(err){
+            alert(err);
+        }
+    }
+</script>
