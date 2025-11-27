@@ -3,7 +3,7 @@
 <div class="login-container">
     
     <div class="left-panel">
-        <img src="../images/medicis_logo.png" class="logo">
+        <img src="/public/images/medicis_logo.png" class="logo">
         <h1 class="brand">Medicis</h1>
     </div>
 
@@ -11,24 +11,54 @@
         <h2>Sign in to <span class="blue">Medicis</span></h2>
 
         <label>Username</label>
-        <input type="text">
-
+        <input type="text" id="username">
+        
         <label>Password</label>
-        <input type="password">
-
-        <button class="primary-btn">Sign In</button>
-
+        <input type="password" id="password">
+        
+        <button class="primary-btn" onclick="login()">Sign In</button>
+        
         <p class="center-text">or</p>
-
+        
         <button class="google-btn">
-            <img src="../images/google_logo.png" class="google-icon">
+            <img src="/public/images/g-logo.png" class="google-icon">
             Sign in with Google
         </button>
-
+        
         <p class="footer-text">
             Don't have an account?
-            <a href="#">Create Account</a>
+            <a href="/redirect/create-account-part-1" >Create Account</a>
         </p>
     </div>
 
 </div>
+
+<script>
+    async function login(){
+        try{
+            let payload = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value
+            }
+
+            const result = await fetch("/user/login", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const res = await result.json();
+
+            if(!res.success){
+                alert(res.message);
+                return
+            }
+            window.location.href = res.redirect
+        }
+        catch(err){
+            alert(err);
+        }
+    }
+</script>
