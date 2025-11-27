@@ -1,37 +1,45 @@
-<link rel="stylesheet" href="style.css">
-<base href="/pages">
-<div class="login-container">
-    
-    <div class="left-panel">
-        <img src="/public/images/medicis_logo.png" class="logo">
-        <h1 class="brand">Medicis</h1>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Medicis — Login</title>
+
+    <link rel="stylesheet" href="../pages/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="left-panel">
+            <img src="../images/medicis_logo.png" alt="Medicis logo" class="logo">
+            <h1 class="brand">Medicis</h1>
+        </div>
+
+        <div class="right-panel">
+            <h2>Sign in to <span class="blue">Medicis</span></h2>
+
+						<label for="username">Username</label>
+						<input id="username" type="text" required>
+
+						<label for="password">Password</label>
+						<input id="password" type="password" required>
+
+						<button type="submit" class="primary-btn" onclick="login()">Sign In</button>
+
+            <p class="center-text">or</p>
+
+            <button class="google-btn" type="button" onclick="window.location='/auth/google'">
+                <img src="../images/g-logo.png" alt="Google logo" class="google-icon">
+                Sign in with Google
+            </button>
+
+            <p class="footer-text">
+                Don't have an account?
+                <a href="/pages/register1.html">Create Account</a>
+            </p>
+        </div>
     </div>
-
-    <div class="right-panel">
-        <h2>Sign in to <span class="blue">Medicis</span></h2>
-
-        <label>Username</label>
-        <input type="text" id="username">
-        
-        <label>Password</label>
-        <input type="password" id="password">
-        
-        <button class="primary-btn" onclick="login()">Sign In</button>
-        
-        <p class="center-text">or</p>
-        
-        <button class="google-btn">
-            <img src="/public/images/g-logo.png" class="google-icon">
-            Sign in with Google
-        </button>
-        
-        <p class="footer-text">
-            Don't have an account?
-            <a href="/redirect/create-account-part-1" >Create Account</a>
-        </p>
-    </div>
-
-</div>
+</body>
+</html>
 
 <script>
     async function login(){
