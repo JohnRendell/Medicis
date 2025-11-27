@@ -10,40 +10,55 @@
     <div class="right-panel">
         <h2>Sign in to <span class="blue">Medicis</span></h2>
 
-        <form id="formLogin" action="/pages/dashboard" method="post">
-            <label>Username</label>
-            <input type="text" name="username">
-            
-            <label>Password</label>
-            <input type="password" name="password">
-            
-            <button class="primary-btn" type="submit" name="submit">Sign In</button>
-            
-            <p class="center-text">or</p>
-            
-            <button class="google-btn" type="button">
-                <img src="/public/images/g-logo.png" class="google-icon">
-                Sign in with Google
-            </button>
-            
-            <p class="footer-text">
-                Don't have an account?
-                <a href="/pages/register1" type="button">Create Account</a>
-            </p>
-        </form>
+        <label>Username</label>
+        <input type="text" id="username">
+        
+        <label>Password</label>
+        <input type="password" id="password">
+        
+        <button class="primary-btn" onclick="login()">Sign In</button>
+        
+        <p class="center-text">or</p>
+        
+        <button class="google-btn">
+            <img src="/public/images/g-logo.png" class="google-icon">
+            Sign in with Google
+        </button>
+        
+        <p class="footer-text">
+            Don't have an account?
+            <a href="/redirect/create-account-part-1" >Create Account</a>
+        </p>
     </div>
 
 </div>
 
 <script>
-    document.getElementById("formLogin").addEventListener("submit", function(e){
-        const username = this.username.value;
-        const password = this.password.value;
+    async function login(){
+        try{
+            let payload = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value
+            }
 
-        if(!username || !password){
-            e.preventDefault();
-            alert("fields are empty")
-            return
+            const result = await fetch("/user/login", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const res = await result.json();
+
+            if(!res.success){
+                alert(res.message);
+                return
+            }
+            window.location.href = res.redirect
         }
-    })
+        catch(err){
+            alert(err);
+        }
+    }
 </script>

@@ -24,21 +24,19 @@
     <div class="right">
         <h2>Create Account</h2>
 
-        <form action="/pages/register2" id="registerForm" method="post">
-            <label>Username</label>
-            <input type="text" name="username" required>
+        <label>Username</label>
+        <input type="text" id="username" required>
 
-            <label>Password</label>
-            <input type="password" name="password" required>
+        <label>Password</label>
+        <input type="password" id="password" required>
 
-            <label>Re-enter Password</label>
-            <input type="password" name="confirm_pass" required>
+        <label>Re-enter Password</label>
+        <input type="password" id="confirm_pass" required>
 
-            <div class="btn-row">
-                <button class="btn-secondary" type="button">Back</button>
-                <button class="btn-primary" name="submit" type="submit">Next</button>
-            </div>
-        </form>
+        <div class="btn-row">
+            <button class="btn-secondary">Back</button>
+            <button class="btn-primary" onclick="register()">Next</button>
+        </div>
     </div>
 
 </div>
@@ -47,30 +45,32 @@
 </html>
 
 <script>
-    document.getElementById("registerForm").addEventListener("submit", function (e) {
-        const username = this.username.value;
-        const password = this.password.value;
-        const confirm_pass = this.confirm_pass.value;
+    async function register(){
+        try{
+            let payload = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value,
+                confirm_pass: document.getElementById("confirm_pass").value
+            }
 
-        if (!username || !password || !confirm_pass) {
-            e.preventDefault();
-            alert("Fields are empty");
-            return;
+            const register1 = await fetch("/user/register1", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json",
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const res = await register1.json();
+
+            if(!res.success){
+                alert(res.message)
+                return
+            }
+            window.location.href = res.redirect
         }
-        if (username.length <= 4) {
-            e.preventDefault();
-            alert("Username should be more than 4 characters");
-            return;
+        catch(err){
+            alert(err);
         }
-        if (password.length <= 4) {
-            e.preventDefault();
-            alert("Password should be more than 4 characters");
-            return;
-        }
-        if (password !== confirm_pass) {
-            e.preventDefault();
-            alert("Passwords don't match");
-            return;
-        }
-    });
+    }
 </script>

@@ -46,8 +46,14 @@ app.get("/", (req, res)=>{
 });
 
 //routers
-app.use("/pages", require("./server/page_route"))
+app.use("/redirect", require("./server/page_routes"))
+app.use("/user", require("./server/routes/userRoutes"));
 app.use("/patients", require("./server/routes/patientRoutes"));
+
+//404 page
+app.use((req, res)=>{
+    res.status(404).sendFile(path.join(__dirname, "./public/pages/404page.html"));
+})
 
 let port = 8080
 expressServer.listen(port, ()=>{
