@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express.Router();
 const fs = require("fs");
-
+const path = require("path");
+const db = require("../config/db");
+const bcrypt = require("bcrypt");
 // PATIENT PAGESSSSSSSSSS --------------------------------------------------- 
 
 const { getUserById, getPatientById } = require('../models/patient_session');
@@ -22,53 +24,67 @@ function userOnly(req, res, next) {
     next();
 }
 
-app.post('/login', async (req, res) => {
+async function login_account_middleware(req, res, next){
+    try{
+        // 1. Query the database to retrieve user credentials and role/ID
+        const [result] = await db.query(
+            "SELECT user_id, username, password, role FROM user_account WHERE username = ?",
+            [req.body.username]
+        );
+        
+        const userRecord = result[0];
 
-  try {
-    // naka default pa na user_id 1 yung kukunin dito para pang testing kasi ginagawa pa den ung login/register e
-   const user_session = await getUserById(1);
-    if (!user_session) {
-      return res.status(404).send('User not found');
+        if(result.length <= 0){
+            return res.status(400).json({ success: false, message: "Invalid username or password"});
+        }
+
+        // 2. Compare password using bcrypt
+        const compare_pass = await bcrypt.compare(req.body.password, userRecord.password);
+
+        if(!compare_pass){
+            return res.status(400).json({ success: false, message: "Invalid username or password"});
+        }
+
+        const { password, ...userData } = userRecord; 
+        req.user = userData; 
+
+        next();
     }
-    req.session.user = {
-      id: user_session.user_id,
-      username: user_session.username,
-      role: user_session.role
-    };
+    catch(err){
+        console.error("!!! MIDDLEWARE CRASHED !!!", err);
+        return res.status(500).json({ success: false, message: "Internal Server Error during authentication", logs: err.message})
+    }
+} 
 
-    res.redirect('/patientinfo');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Server error');
-  }
+app.post('/login', login_account_middleware, async (req, res) => {
+    
+    try {
+        const authenticatedUser = req.user;
+        
+        req.session.user = {
+            user_id: authenticatedUser.user_id,
+            username: authenticatedUser.username,
+            role: authenticatedUser.role
+        };
+        req.session.isValid = true
+       res.status(200).json({ success: true, message: "Login successful", redirect: "/redirect/dashboard"});
+    } catch (error) {
+        console.error("Session establishment failed:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Server error during session establishment.",
+            logs: error.message
+        });
+    }
 });
 
-
-app.get("/patientinfo", LoginAuth, userOnly , (req, res)=>{
-    res.sendFile(path.join(__dirname, "public", "pages", "User", "Info_Dashboard.html"));
-});
-app.get("/appointment", LoginAuth, userOnly , (req, res)=>{
-    res.sendFile(path.join(__dirname, "public", "pages", "User", "Appointment Dashboard.html"));
-});
-app.get("/billing", LoginAuth, userOnly , (req, res)=>{
-    res.sendFile(path.join(__dirname, "public", "pages", "User", "Billing_Receipt_Dashboard.html"));
-});
-
-// PANG TEST LANG MAG LOG IN NG USER KASI GINAGAWA NI RENDELL YUNG SA LOGIN/REGISTER E
-app.get('/login', (req, res) => {
-  res.send(`
-    <form action="/login" method="POST">
-      <button type="submit">Login as TestUser</button>
-    </form>
-  `);
-});
 
 // kuha ng info ng patients para malagay sa may info_dashboard.html
 app.get('/loadpatientinfo', LoginAuth, async (req, res) => {
     
   try {
     
-    const userId = req.session.user.id;
+    const userId = req.session.user.user_id;
     const patient_info = await getPatientById(userId); 
     res.json(JSON.parse(JSON.stringify(patient_info)));
 
@@ -79,7 +95,7 @@ app.get('/loadpatientinfo', LoginAuth, async (req, res) => {
 });
 // update patient info
 app.patch('/update-patient-info', LoginAuth, async (req, res) => {
-    const userId = req.session.user.id; 
+    const userId = req.session.user_id; 
     const updatedData = req.body; 
     console.log("Updated Data:", updatedData);
     try {
@@ -135,6 +151,5 @@ app.get('/logout', (req, res) => {
         res.redirect('/');
     }
 });
-// --------------------------------------------------- END OF PATIENT PAGES
 
 module.exports = app;

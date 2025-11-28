@@ -25,4 +25,37 @@ router.get("/dashboard", (req, res)=>{
     return res.redirect("/");
 });
 
+router.get("/patientinfo", (req, res)=>{
+    let isValid =  req.session.isValid
+
+    if(isValid){
+        return res.sendFile(path.join(__dirname, "../public/pages/User/info_Dashboard.html"));
+    }
+    return res.redirect("/");
+});
+
+router.get("/appointment", (req, res) => {
+    
+    let isValid =  req.session.isValid
+
+    if (isValid) {
+        return res.sendFile(path.join(__dirname, "../public/pages/User/Appointment Dashboard.html"));
+    }
+    
+    return res.redirect("/");
+});
+
+router.get("/billing", (req, res) => {
+    
+    let isValid =  req.session.isValid
+
+    if (isValid) {
+        return res.sendFile(path.join(__dirname, "../public/pages/User/Billing_Receipt_Dashboard.html"));
+    }
+    
+    return res.redirect("/");
+});
+
+
+
 module.exports = router

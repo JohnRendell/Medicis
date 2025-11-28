@@ -49,7 +49,7 @@
                 password: document.getElementById("password").value
             }
 
-            const result = await fetch("/user/login", {
+            const result = await fetch("/patients/login", {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json"

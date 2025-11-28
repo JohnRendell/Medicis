@@ -356,7 +356,7 @@ editForm?.addEventListener('submit', async (e) => {
 
 
     try {
-        const response = await fetch('/update-patient-info', {
+        const response = await fetch('/patients/update-patient-info', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

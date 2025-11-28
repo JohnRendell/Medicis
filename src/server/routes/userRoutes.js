@@ -80,28 +80,28 @@ function register2_middleware(req, res, next) {
     next();
 }
 
-async function login_account_middleware(req, res, next){
-    try{
-        const [result] = await db.query(
-            "SELECT * FROM user_account WHERE username = ?", [req.body.username]
-        )
+// async function login_account_middleware(req, res, next){
+//     try{
+//         const [result] = await db.query(
+//             "SELECT * FROM user_account WHERE username = ?", [req.body.username]
+//         )
 
-        if(result.length <= 0){
-            return res.status(400).json({ success: false, message: "Invalid username or password"});
-        }
+//         if(result.length <= 0){
+//             return res.status(400).json({ success: false, message: "Invalid username or password"});
+//         }
 
-        const compare_pass = await bcrypt.compare(req.body.password, result[0].password);
+//         const compare_pass = await bcrypt.compare(req.body.password, result[0].password);
 
-        if(!compare_pass){
-            return res.status(400).json({ success: false, message: "Invalid username or password"});
-        }
+//         if(!compare_pass){
+//             return res.status(400).json({ success: false, message: "Invalid username or password"});
+//         }
 
-        next();
-    }
-    catch(err){
-        return res.status(500).json({ success: false, message: "Internal Server Error", logs: err})
-    }
-}
+//         next();
+//     }
+//     catch(err){
+//         return res.status(500).json({ success: false, message: "Internal Server Error", logs: err})
+//     }
+// }
 
 router.post("/register1", register1_middleware, async (req, res)=>{
     try{
@@ -172,9 +172,9 @@ router.post("/register2", register2_middleware, async (req, res) => {
     }
 });
 
-router.post("/login", login_account_middleware, async (req, res)=>{
-    req.session.isValid = true
-    res.status(200).json({ success: true, message: "Login successful", redirect: "/redirect/dashboard"});
-});
+// router.post("/login", login_account_middleware, async (req, res)=>{
+//     req.session.isValid = true
+//     res.status(200).json({ success: true, message: "Login successful", redirect: "/redirect/dashboard"});
+// });
 
 module.exports = router;

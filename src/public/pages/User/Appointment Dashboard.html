@@ -14,9 +14,9 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a class="nav-btn" href="/patientinfo"><span class="icon">👤</span> Patient Profile</a></li>
-                <li><a class="nav-btn active" href="/appointment"><span class="icon">📅</span> Appointments</a></li>
-                <li><a class="nav-btn" href="/billing"><span class="icon">💳</span> Billing</a></li>
+                <li><a class="nav-btn" href="/redirect/patientinfo"><span class="icon">👤</span> Patient Profile</a></li>
+                <li><a class="nav-btn active" href="/redirect/appointment"><span class="icon">📅</span> Appointments</a></li>
+                <li><a class="nav-btn" href="/redirect/billing"><span class="icon">💳</span> Billing</a></li>
             </ul>   
         </nav>
         <div class="sidebar-footer">
@@ -34,7 +34,7 @@
             <div class="page-header" style="position: relative;">
                 <h1>Your Appointments</h1>
                 <p class="welcome-text">Welcome Back, <span id="appt-user-name">Juan Dela Cruz</span></p>
-                <button class="btn-secondary signout-top" title="Sign out" style="position: absolute; top: 15px; right: 10px;">Sign Out</button>
+                <button id="signout-button" class="btn-secondary signout-top" title="Sign out" style="position: absolute; top: 15px; right: 10px;">Sign Out</button>
                 <hr>
             </div>
             <div class="appointments-container">
@@ -118,5 +118,45 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        async function Logout() {
+    try {
+        const response = await fetch('/patients/logout', {
+            method: 'GET',
+            credentials: 'include',
+
+            redirect: 'follow' 
+        });
+        if (response.ok) {
+            window.location.href = '/'; 
+        } else if (response.status === 302) {
+            const redirectUrl = response.headers.get('Location');
+            if (redirectUrl) {
+                console.log("Redirecting manually via Location header:", redirectUrl);
+                window.location.href = redirectUrl;
+            } else {
+
+                window.location.href = '/'; 
+            }
+
+        } else {
+
+            alert(`Logout failed with status ${response.status}.`);
+        }
+    } catch (error) {
+        console.error('Network error during sign out:', error);
+        alert('A network error occurred during sign out.');
+    }
+}
+
+const signoutButton = document.getElementById('signout-button');
+
+if (signoutButton) {
+    signoutButton.addEventListener('click', (e) => {
+        e.preventDefault(); 
+        Logout();
+    });
+}
+    </script>
 </body>
 </html>
