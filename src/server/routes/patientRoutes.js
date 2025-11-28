@@ -16,6 +16,49 @@ function LoginAuth(req, res, next) {
     }
     next();
 }
+
+//validate edit information
+function validate_edit_info(req, res, next){
+  const { name, sex, age, date_of_birth, address, email, phone } = req.body
+
+  if(!name || !sex || !age || !date_of_birth || !address || !email || !phone){
+    res.status(400).json({ success: false, message: "Fields are empty" });
+    return
+  }
+
+  if(name.length <= 4){
+    res.status(400).json({ success: false, message: "name must be five above" });
+    return
+  }
+
+  const birthday = new Date(date_of_birth);
+  if (isNaN(birthday.getTime())) {
+      return res.status(400).json({ success: false, message: "Invalid date format" });
+  }
+
+  if (birthday >= new Date()) {
+      return res.status(400).json({ success: false, message: "Birthday cannot be in the future" });
+  }
+
+  if (age < 0 || age > 120) {
+      return res.status(400).json({ success: false, message: "Age is not valid" });
+  }
+
+  if (address.length < 5) {
+      return res.status(400).json({ success: false, message: "Address must be at least 5 characters" });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+      return res.status(400).json({ success: false, message: "Enter a valid email" });
+  }
+
+  if (phone.length < 5) {
+      return res.status(400).json({ success: false, message: "Phone number must be at least 5 characters" });
+  }
+  next();
+}
+
 // Validates that the role is User
 function userOnly(req, res, next) {
     if (req.session.user.role !== 'User') {
@@ -81,11 +124,33 @@ app.post('/login', login_account_middleware, async (req, res) => {
 
 // kuha ng info ng patients para malagay sa may info_dashboard.html
 app.get('/loadpatientinfo', LoginAuth, async (req, res) => {
+  function getAge(dobString) {
+    const dob = new Date(dobString);
+    const today = new Date();
+
+    let age = today.getFullYear() - dob.getUTCFullYear();
+
+    return age;
+  }
+
+  function formatDate(dobString) {
+    const d = new Date(dobString);
+
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(d.getUTCDate() + 1).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
     
   try {
     
     const userId = req.session.user.user_id;
     const patient_info = await getPatientById(userId); 
+
+    patient_info.age = getAge(patient_info.date_of_birth)
+    patient_info.date_of_birth = formatDate(patient_info.date_of_birth)
+
     res.json(JSON.parse(JSON.stringify(patient_info)));
 
   } catch (error) {
@@ -93,11 +158,12 @@ app.get('/loadpatientinfo', LoginAuth, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
 // update patient info
-app.patch('/update-patient-info', LoginAuth, async (req, res) => {
+app.patch('/update-patient-info', LoginAuth, validate_edit_info, async (req, res) => {
     const userId = req.session.user.user_id; 
     const updatedData = req.body; 
-    console.log("Updated Data:", updatedData);
+
     try {
         const query = `
             UPDATE patient
@@ -124,12 +190,49 @@ app.patch('/update-patient-info', LoginAuth, async (req, res) => {
         ];
 
 
-const result = await db.query(query, values);
-res.status(200).json({ message: 'Patient information updated successfully' });
- } catch (error) {
-console.error('Error updating patient info:', error);
- res.status(500).json({ message: 'Failed to update patient information' });
- }
+    const [result] = await db.query(query, values);
+
+    if(result.affectedRows > 0){
+      const [updated_data] = await db.query(
+        "SELECT * FROM patient WHERE user_id = ?", [userId]
+      )
+
+      if(updated_data.length > 0){
+        let data = updated_data[0];
+
+        function formatDate(dobString) {
+          const d = new Date(dobString);
+
+          const year = d.getUTCFullYear();
+          const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+          const day = String(d.getUTCDate() + 1).padStart(2, "0");
+
+          return `${year}-${month}-${day}`;
+        }
+
+        const map = {
+          name: data.name,
+          sex: data.sex,
+          age: data.age,
+          date_of_birth: formatDate(data.date_of_birth),
+          address: data.address,
+          email: data.email,
+          phone: data.phone,
+          patient_id: data.patient_id
+        }
+
+        res.status(200).json({ success: true, message: 'Patient information updated successfully', patientData: map });
+        return
+      }
+      res.status(400).json({ success: false, message: "failed to fetch updated info"})
+      return
+    }
+
+    res.status(400).json({ success: false, message: 'Failed to update patient information' });
+  } catch (error) {
+  console.error('Error updating patient info:', error);
+    res.status(500).json({ success: false, message: "Internal Server Error", logs: error });
+  }
 });
 
 // LOGOUT ROUTE

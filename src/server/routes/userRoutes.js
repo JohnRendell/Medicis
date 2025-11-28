@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const path = require("path");
 const db = require("../config/db");
 const bcrypt = require("bcrypt");
 
@@ -80,29 +79,6 @@ function register2_middleware(req, res, next) {
     next();
 }
 
-// async function login_account_middleware(req, res, next){
-//     try{
-//         const [result] = await db.query(
-//             "SELECT * FROM user_account WHERE username = ?", [req.body.username]
-//         )
-
-//         if(result.length <= 0){
-//             return res.status(400).json({ success: false, message: "Invalid username or password"});
-//         }
-
-//         const compare_pass = await bcrypt.compare(req.body.password, result[0].password);
-
-//         if(!compare_pass){
-//             return res.status(400).json({ success: false, message: "Invalid username or password"});
-//         }
-
-//         next();
-//     }
-//     catch(err){
-//         return res.status(500).json({ success: false, message: "Internal Server Error", logs: err})
-//     }
-// }
-
 router.post("/register1", register1_middleware, async (req, res)=>{
     try{
         const [check_account] = await db.query(
@@ -171,10 +147,5 @@ router.post("/register2", register2_middleware, async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal Server Error", logs: err });
     }
 });
-
-// router.post("/login", login_account_middleware, async (req, res)=>{
-//     req.session.isValid = true
-//     res.status(200).json({ success: true, message: "Login successful", redirect: "/redirect/dashboard"});
-// });
 
 module.exports = router;
