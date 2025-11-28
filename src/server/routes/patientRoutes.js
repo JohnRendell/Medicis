@@ -95,7 +95,7 @@ app.get('/loadpatientinfo', LoginAuth, async (req, res) => {
 });
 // update patient info
 app.patch('/update-patient-info', LoginAuth, async (req, res) => {
-    const userId = req.session.user_id; 
+    const userId = req.session.user.user_id; 
     const updatedData = req.body; 
     console.log("Updated Data:", updatedData);
     try {
