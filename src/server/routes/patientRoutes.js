@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express.Router();
 const fs = require("fs");
-
+const path = require("path");
+const db = require("../config/db");
+const bcrypt = require("bcrypt");
 // PATIENT PAGESSSSSSSSSS --------------------------------------------------- 
 
 const { getUserById, getPatientById } = require('../models/patient_session');
@@ -14,6 +16,49 @@ function LoginAuth(req, res, next) {
     }
     next();
 }
+
+//validate edit information
+function validate_edit_info(req, res, next){
+  const { name, sex, age, date_of_birth, address, email, phone } = req.body
+
+  if(!name || !sex || !age || !date_of_birth || !address || !email || !phone){
+    res.status(400).json({ success: false, message: "Fields are empty" });
+    return
+  }
+
+  if(name.length <= 4){
+    res.status(400).json({ success: false, message: "name must be five above" });
+    return
+  }
+
+  const birthday = new Date(date_of_birth);
+  if (isNaN(birthday.getTime())) {
+      return res.status(400).json({ success: false, message: "Invalid date format" });
+  }
+
+  if (birthday >= new Date()) {
+      return res.status(400).json({ success: false, message: "Birthday cannot be in the future" });
+  }
+
+  if (age < 0 || age > 120) {
+      return res.status(400).json({ success: false, message: "Age is not valid" });
+  }
+
+  if (address.length < 5) {
+      return res.status(400).json({ success: false, message: "Address must be at least 5 characters" });
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+      return res.status(400).json({ success: false, message: "Enter a valid email" });
+  }
+
+  if (phone.length < 5) {
+      return res.status(400).json({ success: false, message: "Phone number must be at least 5 characters" });
+  }
+  next();
+}
+
 // Validates that the role is User
 function userOnly(req, res, next) {
     if (req.session.user.role !== 'User') {
@@ -22,54 +67,90 @@ function userOnly(req, res, next) {
     next();
 }
 
-app.post('/login', async (req, res) => {
+async function login_account_middleware(req, res, next){
+    try{
+        // 1. Query the database to retrieve user credentials and role/ID
+        const [result] = await db.query(
+            "SELECT user_id, username, password, role FROM user_account WHERE username = ?",
+            [req.body.username]
+        );
+        
+        const userRecord = result[0];
 
-  try {
-    // naka default pa na user_id 1 yung kukunin dito para pang testing kasi ginagawa pa den ung login/register e
-   const user_session = await getUserById(1);
-    if (!user_session) {
-      return res.status(404).send('User not found');
+        if(result.length <= 0){
+            return res.status(400).json({ success: false, message: "Invalid username or password"});
+        }
+
+        // 2. Compare password using bcrypt
+        const compare_pass = await bcrypt.compare(req.body.password, userRecord.password);
+
+        if(!compare_pass){
+            return res.status(400).json({ success: false, message: "Invalid username or password"});
+        }
+
+        const { password, ...userData } = userRecord; 
+        req.user = userData; 
+
+        next();
     }
-    req.session.user = {
-      id: user_session.user_id,
-      username: user_session.username,
-      role: user_session.role
-    };
+    catch(err){
+        console.error("!!! MIDDLEWARE CRASHED !!!", err);
+        return res.status(500).json({ success: false, message: "Internal Server Error during authentication", logs: err.message})
+    }
+} 
 
-    res.redirect('/patientinfo');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Server error');
-  }
+app.post('/login', login_account_middleware, async (req, res) => {
+    
+    try {
+        const authenticatedUser = req.user;
+        
+        req.session.user = {
+            user_id: authenticatedUser.user_id,
+            username: authenticatedUser.username,
+            role: authenticatedUser.role
+        };
+        req.session.isValid = true
+       res.status(200).json({ success: true, message: "Login successful", redirect: "/redirect/dashboard"});
+    } catch (error) {
+        console.error("Session establishment failed:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Server error during session establishment.",
+            logs: error.message
+        });
+    }
 });
 
-
-app.get("/patientinfo", LoginAuth, userOnly , (req, res)=>{
-    res.sendFile(path.join(__dirname, "public", "pages", "User", "Info_Dashboard.html"));
-});
-app.get("/appointment", LoginAuth, userOnly , (req, res)=>{
-    res.sendFile(path.join(__dirname, "public", "pages", "User", "Appointment Dashboard.html"));
-});
-app.get("/billing", LoginAuth, userOnly , (req, res)=>{
-    res.sendFile(path.join(__dirname, "public", "pages", "User", "Billing_Receipt_Dashboard.html"));
-});
-
-// PANG TEST LANG MAG LOG IN NG USER KASI GINAGAWA NI RENDELL YUNG SA LOGIN/REGISTER E
-app.get('/login', (req, res) => {
-  res.send(`
-    <form action="/login" method="POST">
-      <button type="submit">Login as TestUser</button>
-    </form>
-  `);
-});
 
 // kuha ng info ng patients para malagay sa may info_dashboard.html
 app.get('/loadpatientinfo', LoginAuth, async (req, res) => {
+  function getAge(dobString) {
+    const dob = new Date(dobString);
+    const today = new Date();
+
+    let age = today.getFullYear() - dob.getUTCFullYear();
+
+    return age;
+  }
+
+  function formatDate(dobString) {
+    const d = new Date(dobString);
+
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(d.getUTCDate() + 1).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
     
   try {
     
-    const userId = req.session.user.id;
+    const userId = req.session.user.user_id;
     const patient_info = await getPatientById(userId); 
+
+    patient_info.age = getAge(patient_info.date_of_birth)
+    patient_info.date_of_birth = formatDate(patient_info.date_of_birth)
+
     res.json(JSON.parse(JSON.stringify(patient_info)));
 
   } catch (error) {
@@ -77,11 +158,12 @@ app.get('/loadpatientinfo', LoginAuth, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
 // update patient info
-app.patch('/update-patient-info', LoginAuth, async (req, res) => {
-    const userId = req.session.user.id; 
+app.patch('/update-patient-info', LoginAuth, validate_edit_info, async (req, res) => {
+    const userId = req.session.user.user_id; 
     const updatedData = req.body; 
-    console.log("Updated Data:", updatedData);
+
     try {
         const query = `
             UPDATE patient
@@ -108,12 +190,49 @@ app.patch('/update-patient-info', LoginAuth, async (req, res) => {
         ];
 
 
-const result = await db.query(query, values);
-res.status(200).json({ message: 'Patient information updated successfully' });
- } catch (error) {
-console.error('Error updating patient info:', error);
- res.status(500).json({ message: 'Failed to update patient information' });
- }
+    const [result] = await db.query(query, values);
+
+    if(result.affectedRows > 0){
+      const [updated_data] = await db.query(
+        "SELECT * FROM patient WHERE user_id = ?", [userId]
+      )
+
+      if(updated_data.length > 0){
+        let data = updated_data[0];
+
+        function formatDate(dobString) {
+          const d = new Date(dobString);
+
+          const year = d.getUTCFullYear();
+          const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+          const day = String(d.getUTCDate() + 1).padStart(2, "0");
+
+          return `${year}-${month}-${day}`;
+        }
+
+        const map = {
+          name: data.name,
+          sex: data.sex,
+          age: data.age,
+          date_of_birth: formatDate(data.date_of_birth),
+          address: data.address,
+          email: data.email,
+          phone: data.phone,
+          patient_id: data.patient_id
+        }
+
+        res.status(200).json({ success: true, message: 'Patient information updated successfully', patientData: map });
+        return
+      }
+      res.status(400).json({ success: false, message: "failed to fetch updated info"})
+      return
+    }
+
+    res.status(400).json({ success: false, message: 'Failed to update patient information' });
+  } catch (error) {
+  console.error('Error updating patient info:', error);
+    res.status(500).json({ success: false, message: "Internal Server Error", logs: error });
+  }
 });
 
 // LOGOUT ROUTE
@@ -135,6 +254,5 @@ app.get('/logout', (req, res) => {
         res.redirect('/');
     }
 });
-// --------------------------------------------------- END OF PATIENT PAGES
 
 module.exports = app;

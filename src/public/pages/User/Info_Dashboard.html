@@ -14,9 +14,9 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a class="nav-btn active" href="/patientinfo"><span class="icon">👤</span> Patient Profile</a></li>
-                <li><a class="nav-btn" href="/appointment"><span class="icon">📅</span> Appointments</a></li>
-                <li><a class="nav-btn" href="/billing"><span class="icon">💳</span> Billing</a></li>
+                <li><a class="nav-btn active" href="/redirect/patientinfo"><span class="icon">👤</span> Patient Profile</a></li>
+                <li><a class="nav-btn" href="/redirect/appointment"><span class="icon">📅</span> Appointments</a></li>
+                <li><a class="nav-btn" href="/redirect/billing"><span class="icon">💳</span> Billing</a></li>
             </ul>
         </nav>
         <div class="sidebar-footer">
@@ -75,8 +75,8 @@
                     <label for="input-sex">Sex</label>
                     <select id="input-sex" name="sex" required>
                         <option value="">Select Sex...</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
+                        <option value="MALE">MALE</option>
+                        <option value="FEMALE">FEMALE</option>
                     </select>
                 </div>
                 <div class="form-field">
@@ -111,7 +111,7 @@
 
   <script src="script.js"></script>
   <script>
-        function renderPatientInfo() {
+    function renderPatientInfo(patientData) {
         document.getElementById('patient-name-header').textContent = (patientData.name || '').toUpperCase();
         document.getElementById('patient-id-header').textContent = patientData.patient_id || '';
         document.getElementById('patient-id-display') && (document.getElementById('patient-id-display').textContent = patientData.patient_id || '');
@@ -120,15 +120,7 @@
         document.getElementById('info-sex') && (document.getElementById('info-sex').textContent = patientData.sex || '');
         document.getElementById('info-age') && (document.getElementById('info-age').textContent = patientData.age ?? '');
         
-        if (document.getElementById('info-date_of_birth')) {
-            const date_of_birth = patientData.date_of_birth || '';
-            if (/^\d{4}-\d{2}-\d{2}/.test(date_of_birth)) {
-                const d = new Date(date_of_birth);
-                document.getElementById('info-date_of_birth').textContent = isNaN(d) ? date_of_birth : `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/${d.getFullYear()}`;
-            } else {
-                document.getElementById('info-date_of_birth').textContent = date_of_birth;
-            }
-        }
+        document.getElementById('info-date_of_birth').textContent = patientData.date_of_birth || new Date();
         
         document.getElementById('info-address') && (document.getElementById('info-address').textContent = patientData.address || '');
         document.getElementById('info-email') && (document.getElementById('info-email').textContent = patientData.email || '');
@@ -137,15 +129,18 @@
         const apptName = document.getElementById('appt-user-name'); if (apptName) apptName.textContent = patientData.name || '';
         const billingName = document.getElementById('billing-user-name'); if (billingName) billingName.textContent = patientData.name || '';
     }
-let patientData = {}; 
 
+
+let patientData = {}
 async function loadPatientInfo() {
   try {
-    const response = await fetch('/loadpatientinfo');
+    const response = await fetch('/patients/loadpatientinfo');
     if (!response.ok) throw new Error('Failed to fetch patient info');
     patientData = await response.json(); 
-    renderPatientInfo(); 
-    console.log(patientData);
+   
+    if(patientData){
+        renderPatientInfo(patientData);
+    }
   } catch (error) {
     console.error('Error fetching patient info:', error);
   }
@@ -154,7 +149,7 @@ document.addEventListener('DOMContentLoaded', loadPatientInfo);
 
 async function Logout() {
     try {
-        const response = await fetch('/logout', {
+        const response = await fetch('/patients/logout', {
             method: 'GET',
             credentials: 'include',
 

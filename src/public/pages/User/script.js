@@ -272,11 +272,19 @@ const updateInfoBtn = document.getElementById('update-info-btn');
 function showEditForm() {
     if (!editOverlay) return;
 
+   const d = new Date(patientData.date_of_birth);
+
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(d.getUTCDate()).padStart(2, "0");
+
+    const finalDate = `${year}-${month}-${day}`;
+
     // Populate the form fields with the existing patient data
     inputName.value = patientData.name || '';
     inputSex.value = patientData.sex || '';
     inputAge.value = patientData.age || '';
-    inputdate_of_birth.value = patientData?.date_of_birth || '';
+    inputdate_of_birth.value = finalDate || '';
     inputAddress.value = patientData.address || '';
     inputEmail.value = patientData.email || '';
     inputPhone.value = patientData.phone || '';
@@ -318,30 +326,31 @@ cancelEditBtn?.addEventListener('click', (e) => {
 editForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-
     const currentFormData = {
         name: inputName.value.trim(),
         sex: inputSex.value,
-        age: inputAge.value,
+        age: parseInt(inputAge.value),
         date_of_birth: inputdate_of_birth.value,
         address: inputAddress.value.trim(),
         email: inputEmail.value.trim(),
         phone: inputPhone.value.trim(),
     };
 
+    const toCompare = {
+        name: patientData.name,
+        sex: patientData.sex,
+        age: patientData.age,
+        date_of_birth: patientData.date_of_birth,
+        address: patientData.address,
+        email: patientData.email,
+        phone: patientData.phone,
+    };
 
-    const dataToSend = {};
     let changesDetected = false;
 
     for (const key in currentFormData) {
-
-        if (String(currentFormData[key]) !== String(patientData[key] || '')) {
+        if (String(currentFormData[key]) !== String(toCompare[key] || '')) {
             changesDetected = true;
-            if (currentFormData[key] === '') {
-                dataToSend[key] = null;
-            } else {
-                dataToSend[key] = currentFormData[key];
-            }
         }
     }
     
@@ -351,41 +360,24 @@ editForm?.addEventListener('submit', async (e) => {
         return;
     }
 
-
-    Object.assign(patientData, dataToSend);
-
-
     try {
-        const response = await fetch('/update-patient-info', {
+        const response = await fetch('/patients/update-patient-info', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
 
-            body: JSON.stringify(dataToSend), 
+            body: JSON.stringify(currentFormData), 
         });
 
-       if (response.ok) {
-            
+        const res = await response.json();
 
-            try {
-
-                renderPatientInfo(); 
-                hideEditForm(); 
-                alert('Patient information updated successfully!');
-            } catch (renderError) {
-                console.error("Client-side rendering failed after successful update:", renderError);
-
-                alert('Patient information updated successfully! (Note: A display error occurred.)');
-
-                hideEditForm(); 
-            }
-
-            
-        } else {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to update patient information.');
+       if (!res.success) {
+            alert(res.message);
+            return
         }
+        renderPatientInfo(res.patientData)
+        hideEditForm();
     } catch (error) {
         console.error('Final Error during fetch or server failure:', error);
         alert(`Error updating patient information: ${error.message}`);
