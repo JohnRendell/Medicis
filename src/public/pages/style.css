@@ -68,6 +68,39 @@ body {
   box-sizing: border-box;
 }
 
+/* Fallback: apply consistent input + label styling when inputs aren't inside .login-form or <form>
+   Covers text/password/email/date/number and targets .right / .right-panel used by register pages */
+.right-panel input[type="text"],
+.right-panel input[type="password"],
+.right-panel input[type="email"],
+.right-panel input[type="date"],
+.right-panel input[type="number"],
+.right input[type="text"],
+.right input[type="password"],
+.right input[type="email"],
+.right input[type="date"],
+.right input[type="number"],
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+input[type="number"] {
+  width: 100%;
+  padding: 8px 10px;
+  margin: 6px 0 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* fallback labels */
+.right label,
+.right-panel label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 500;
+}
+
 .primary-btn {
   width: 100%;
   background: #5b33ff;

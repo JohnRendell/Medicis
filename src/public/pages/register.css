@@ -250,6 +250,33 @@ button:focus, a:focus, input:focus {
   border-radius: 10px;
 }
 
+/* ensure labels/inputs on register page get the same styling even when not inside a <form> */
+.right label,
+form label {
+  display: block;
+  margin-top: calc(12px * var(--scale));
+  margin-bottom: calc(6px * var(--scale));
+  font-size: calc(14px * var(--scale));
+  font-weight: 700;
+  color: #222;
+}
+
+.right input,
+.right select,
+.right textarea,
+form input,
+form select,
+form textarea {
+  width: 100%;
+  padding: calc(12px * var(--scale)) calc(14px * var(--scale));
+  border-radius: calc(10px * var(--scale));
+  border: 1px solid #d7d7dc;
+  background: #fbfbfd;
+  font-size: calc(15px * var(--scale));
+  margin: 0;
+  transition: box-shadow .12s ease, border-color .12s ease, transform .06s ease;
+}
+
 /* RESPONSIVE ADJUSTMENTS */
 @media (max-width: 1280px) {
   :root { --scale: 0.95; }
