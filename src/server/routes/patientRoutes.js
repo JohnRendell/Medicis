@@ -19,9 +19,9 @@ function LoginAuth(req, res, next) {
 
 //validate edit information
 function validate_edit_info(req, res, next){
-  const { name, sex, age, date_of_birth, address, email, phone } = req.body
+  const { name, sex, date_of_birth, address, email, phone } = req.body
 
-  if(!name || !sex || !age || !date_of_birth || !address || !email || !phone){
+  if(!name || !sex || !date_of_birth || !address || !email || !phone){
     res.status(400).json({ success: false, message: "Fields are empty" });
     return
   }
@@ -40,6 +40,17 @@ function validate_edit_info(req, res, next){
       return res.status(400).json({ success: false, message: "Birthday cannot be in the future" });
   }
 
+  function getAge(born, today) {
+        let age = today.getFullYear() - born.getFullYear();
+        const m = today.getMonth() - born.getMonth();
+        const d = today.getDate() - born.getDate();
+
+        if (m < 0 || (m === 0 && d < 0)) age--;
+        return age;
+    }
+
+  const age = getAge(birthday, new Date());
+
   if (age < 0 || age > 120) {
       return res.status(400).json({ success: false, message: "Age is not valid" });
   }
@@ -56,6 +67,7 @@ function validate_edit_info(req, res, next){
   if (phone.length < 5) {
       return res.status(400).json({ success: false, message: "Phone number must be at least 5 characters" });
   }
+  req.session.additionalData = { age };
   next();
 }
 
@@ -163,6 +175,7 @@ app.get('/loadpatientinfo', LoginAuth, async (req, res) => {
 app.patch('/update-patient-info', LoginAuth, validate_edit_info, async (req, res) => {
     const userId = req.session.user.user_id; 
     const updatedData = req.body; 
+    updatedData.age = req.session.additionalData?.age
 
     try {
         const query = `
@@ -218,7 +231,8 @@ app.patch('/update-patient-info', LoginAuth, validate_edit_info, async (req, res
           address: data.address,
           email: data.email,
           phone: data.phone,
-          patient_id: data.patient_id
+          patient_id: data.patient_id,
+          user_id: data.user_id
         }
 
         res.status(200).json({ success: true, message: 'Patient information updated successfully', patientData: map });

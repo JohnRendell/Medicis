@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const inputName = document.getElementById('input-name');
 const inputSex = document.getElementById('input-sex');
-const inputAge = document.getElementById('input-age');
 const inputdate_of_birth = document.getElementById('input-date_of_birth');
 const inputAddress = document.getElementById('input-address');
 const inputEmail = document.getElementById('input-email');
@@ -283,7 +282,6 @@ function showEditForm() {
     // Populate the form fields with the existing patient data
     inputName.value = patientData.name || '';
     inputSex.value = patientData.sex || '';
-    inputAge.value = patientData.age || '';
     inputdate_of_birth.value = finalDate || '';
     inputAddress.value = patientData.address || '';
     inputEmail.value = patientData.email || '';
@@ -329,7 +327,6 @@ editForm?.addEventListener('submit', async (e) => {
     const currentFormData = {
         name: inputName.value.trim(),
         sex: inputSex.value,
-        age: parseInt(inputAge.value),
         date_of_birth: inputdate_of_birth.value,
         address: inputAddress.value.trim(),
         email: inputEmail.value.trim(),
@@ -339,7 +336,6 @@ editForm?.addEventListener('submit', async (e) => {
     const toCompare = {
         name: patientData.name,
         sex: patientData.sex,
-        age: patientData.age,
         date_of_birth: patientData.date_of_birth,
         address: patientData.address,
         email: patientData.email,
