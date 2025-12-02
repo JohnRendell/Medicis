@@ -18,24 +18,15 @@ router.get("/create-account-part-2", (req, res) => {
 
 router.get("/dashboard", (req, res)=>{
     let isValid =  req.session.isValid
-
-    if(isValid){
-        return res.sendFile(path.join(__dirname, "../public/pages/User/info_Dashboard.html"));
-    }
-    return res.redirect("/");
-});
-
-router.get("/dashboard", (req, res)=>{
-    let isValid =  req.session.isValid
     let isStaff = req.session.isStaff;
 
-    if(isValid && isStaff){
-        return res.sendFile(path.join(__dirname, "../public/pages/Staff/staff_dashboard.html"));
+    if(isValid){
+        if(isStaff){
+            return res.sendFile(path.join(__dirname, "../public/pages/Staff/Patient_info.html"));
+        }
+        return res.sendFile(path.join(__dirname, "../public/pages/User/info_Dashboard.html"));  
     }
 
-    if(isValid && !isStaff){
-        return res.sendFile(path.join(__dirname, "../public/pages/User/info_Dashboard.html"));   
-    }
     return res.redirect("/");
 });
 

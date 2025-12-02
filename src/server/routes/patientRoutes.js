@@ -122,9 +122,14 @@ app.post('/login', login_account_middleware, async (req, res) => {
             role: authenticatedUser.role
         };
 
-        if(authenticatedUser.role == "staff"){
+        console.log(authenticatedUser.role)
+
+        if(authenticatedUser.role == "Staff"){
+          console.log("I am staff")
           req.session.isStaff = true
         }
+
+
         req.session.isValid = true
         res.status(200).json({ success: true, message: "Login successful", redirect: "/redirect/dashboard"});
     } catch (error) {
