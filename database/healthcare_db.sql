@@ -27,12 +27,13 @@ CREATE TABLE IF NOT EXISTS `appointment` (
   KEY `staff_id` (`staff_id`),
   CONSTRAINT `FK__patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `FK_appointment_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table healthcare_db.appointment: ~1 rows (approximately)
+-- Dumping data for table healthcare_db.appointment: ~2 rows (approximately)
 DELETE FROM `appointment`;
 INSERT INTO `appointment` (`appointment_id`, `status`, `staff_id`, `patient_id`, `appointment_time`, `type`) VALUES
-	(1, 'scheduled', NULL, 1, '2025-11-28 17:00:39', 'online');
+	(1, 'scheduled', NULL, 1, '2025-11-28 17:00:39', 'online'),
+	(2, 'scheduled', NULL, 2, '2025-12-01 10:00:00', 'online');
 
 -- Dumping structure for table healthcare_db.billing
 CREATE TABLE IF NOT EXISTS `billing` (
@@ -49,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `billing` (
   CONSTRAINT `FK_billing_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table healthcare_db.billing: ~0 rows (approximately)
+-- Dumping data for table healthcare_db.billing: ~1 rows (approximately)
 DELETE FROM `billing`;
 INSERT INTO `billing` (`billing_id`, `patient_id`, `appointment_id`, `amount_due`, `due_date`, `status`) VALUES
 	(1, 1, 1, 500.00, '2025-12-01', 'Unpaid');
@@ -81,14 +82,15 @@ CREATE TABLE IF NOT EXISTS `patient` (
   PRIMARY KEY (`patient_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `FK_patient_user_account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table healthcare_db.patient: ~0 rows (approximately)
+-- Dumping data for table healthcare_db.patient: ~4 rows (approximately)
 DELETE FROM `patient`;
 INSERT INTO `patient` (`patient_id`, `name`, `email`, `phone`, `date_of_birth`, `address`, `user_id`, `sex`, `age`) VALUES
-	(1, 'Nigel Antipolo', 'nigelpogiako@gmail.com', '09155526780', '2025-10-15', 'Mars Earth', 1, 'Male', 100),
-	(2, 'pogiNigel', 'apogiako@gmail.com', '0915151515', '2003-03-22', 'Jupiter', 11, 'Male', 22),
-	(3, 'Juan Dela Cruzffff', 'admin@gmail.com', '09123456789', '2025-11-04', 'Juipieter', 12, 'Male', 67);
+	(1, 'Nigel Antipolo', 'nigelpogiako@gmail.com', '09155526780', '2025-10-15', 'Mars Earth', NULL, 'Male', 100),
+	(2, 'pogiNigel', 'apogiako@gmail.com', '0915151515111', '2006-10-27', 'Jupiter', 11, 'Male', 19),
+	(3, 'Juan Dela Cruzffff', 'admin@gmail.com', '09123456789', '2025-11-04', 'Juipieter', 12, 'Male', 67),
+	(4, 'Nigel Antipolo', 'nigel@gmail.com', '08277478510', '2003-04-22', 'Sa puso mo', 13, 'Male', 22);
 
 -- Dumping structure for table healthcare_db.payment
 CREATE TABLE IF NOT EXISTS `payment` (
@@ -140,14 +142,14 @@ CREATE TABLE IF NOT EXISTS `user_account` (
   `role` enum('User','Staff','Admin','Cashier') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'User',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table healthcare_db.user_account: ~1 rows (approximately)
+-- Dumping data for table healthcare_db.user_account: ~3 rows (approximately)
 DELETE FROM `user_account`;
 INSERT INTO `user_account` (`user_id`, `username`, `password`, `role`, `created_at`) VALUES
-	(1, 'user1', 'pass', 'User', '2025-11-26 10:58:45'),
-	(11, 'admin123', '$2b$10$Z1uCwQe8YxOkVC/Vp56Qyu4WUy3HLQPuiROKvpdmzYPRwQMGIykQS', 'User', '2025-11-28 00:31:44'),
-	(12, 'abcd123', '$2b$10$sH2/nRakZuntNGq0xQhJPe1zjpSEyCoWixTlC8srhlVKudDZYS1/W', 'User', '2025-11-28 07:16:34');
+	(11, 'admin123', '$2b$10$Z1uCwQe8YxOkVC/Vp56Qyu4WUy3HLQPuiROKvpdmzYPRwQMGIykQS', 'Staff', '2025-11-28 00:31:44'),
+	(12, 'abcd123', '$2b$10$sH2/nRakZuntNGq0xQhJPe1zjpSEyCoWixTlC8srhlVKudDZYS1/W', 'User', '2025-11-28 07:16:34'),
+	(13, 'nigel123', '$2b$10$EsUHIAd/xCF/Ovd7wGWhMeXTmatAUte81xeNZH4cODeQ6EnVOm.RO', 'User', '2025-12-01 16:29:24');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
