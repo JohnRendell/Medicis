@@ -62,8 +62,8 @@
                         <h3>Search Patient</h3>
                         <label for="patient-id">Enter Patient ID:</label>
                         <div class="search-card-input-group">
-                            <input type="text" id="patient-id" placeholder="1234">
-                            <button class="search-card-btn" type="button">Search</button>
+                            <input type="number" id="search-id" placeholder="1234">
+                            <button class="search-card-btn" type="button" onclick="search_id()">Search</button>
                         </div>
                     </div>
                     <div class="card diagnosis-card">
@@ -78,7 +78,7 @@
                         <div class="patient-details">
                             <div class="detail-row">
                                 <label>Name:</label>
-                                <span>Dela Cruz, Juan</span>
+                                <span id="patient-name">----</span>
                             </div>
                             <div class="detail-row">
                                 <label>ID:</label>
@@ -125,3 +125,59 @@
     </div>
 </body>
 </html>
+
+<script>
+    window.onload = async ()=>{
+       const query = await fetch("/staff/staff_info", {
+            method: "GET"
+       });
+
+       const res = await query.json();
+
+       if(res.success){
+            document.getElementById("staff-id").innerHTML = "Staff ID: " + res.data.staff_id
+            document.getElementById("staff-name").innerHTML = res.data.name
+            return
+       }
+       alert(res.message)
+    }
+
+    async function search_id() {
+        try{
+            const query = await fetch("/staff/search-patient-id", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({ user_id: document.getElementById("search-id").value })
+            });
+
+            const res = await query.json();
+
+            console.log(res)
+            if(res.success){
+                document.getElementById("patient-name").innerHTML = res.data.name;
+                document.getElementById("patient-id").innerHTML = res.data.patient_id;
+                document.getElementById("patient-gender").innerHTML = res.data.sex;
+                document.getElementById("patient-age").innerHTML = res.data.age;
+                document.getElementById("patient-birthday").innerHTML = res.data.date_of_birth;
+                document.getElementById("patient-address").innerHTML = res.data.address;
+                document.getElementById("patient-email").innerHTML = res.data.email;
+                document.getElementById("patient-phone").innerHTML = res.data.phone;
+                return
+            }
+            document.getElementById("patient-name").innerHTML = "----";
+            document.getElementById("patient-id").innerHTML = "----";
+            document.getElementById("patient-gender").innerHTML = "----";
+            document.getElementById("patient-age").innerHTML = "----";
+            document.getElementById("patient-birthday").innerHTML = "----/--/--";
+            document.getElementById("patient-address").innerHTML = "----";
+            document.getElementById("patient-email").innerHTML = "----";
+            document.getElementById("patient-phone").innerHTML = "----";
+            return
+        }
+        catch(err){
+            alert(err);
+        }
+    }
+</script>
