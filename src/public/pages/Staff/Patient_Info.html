@@ -48,7 +48,7 @@
             </div>
         </nav>
 
-        <!-- Main Content (leave room for fixed sidebar) -->
+        <!-- Main Content -->
         <main class="main-content">
             <div class="page-inner">
                 <header class="dashboard-header">
@@ -61,13 +61,13 @@
                     <div class="card search-card">
                         <h3>Search Patient</h3>
                         <label for="patient-id">Enter Patient ID:</label>
-                        <input type="text" id="patient-id" placeholder="1234">
+                        <div class="search-card-input-group">
+                            <input type="number" id="search-id" placeholder="1234">
+                            <button class="search-card-btn" type="button" onclick="search_id()">Search</button>
+                        </div>
                     </div>
                     <div class="card diagnosis-card">
-                        <h3>Diagnosis</h3>
-                        <p>Check Patient Diagnosis</p>
-                        <!-- relative link to Diagnosis.html in same folder -->
-                        <a href="./Diagnosis.html" class="arrow-link" aria-label="Go to Diagnosis">➜</a>
+                        <h1><a href="/pages/Staff/Diagnosis.html" class="arrow-link" aria-label="Go to Diagnosis">DIAGNOSIS</a></h1>
                     </div>
                 </div>
 
@@ -78,6 +78,7 @@
                         <div class="patient-details">
                             <div class="detail-row">
                                 <label>Name:</label>
+                                <span id="patient-name">----</span>
                                 <span id="patient-name">--</span>
                             </div>
                             <div class="detail-row">
@@ -140,5 +141,44 @@
             return
        }
        alert(res.message)
+    }
+
+    async function search_id() {
+        try{
+            const query = await fetch("/staff/search-patient-id", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({ user_id: document.getElementById("search-id").value })
+            });
+
+            const res = await query.json();
+
+            console.log(res)
+            if(res.success){
+                document.getElementById("patient-name").innerHTML = res.data.name;
+                document.getElementById("patient-id").innerHTML = res.data.patient_id;
+                document.getElementById("patient-gender").innerHTML = res.data.sex;
+                document.getElementById("patient-age").innerHTML = res.data.age;
+                document.getElementById("patient-birthday").innerHTML = res.data.date_of_birth;
+                document.getElementById("patient-address").innerHTML = res.data.address;
+                document.getElementById("patient-email").innerHTML = res.data.email;
+                document.getElementById("patient-phone").innerHTML = res.data.phone;
+                return
+            }
+            document.getElementById("patient-name").innerHTML = "----";
+            document.getElementById("patient-id").innerHTML = "----";
+            document.getElementById("patient-gender").innerHTML = "----";
+            document.getElementById("patient-age").innerHTML = "----";
+            document.getElementById("patient-birthday").innerHTML = "----/--/--";
+            document.getElementById("patient-address").innerHTML = "----";
+            document.getElementById("patient-email").innerHTML = "----";
+            document.getElementById("patient-phone").innerHTML = "----";
+            return
+        }
+        catch(err){
+            alert(err);
+        }
     }
 </script>

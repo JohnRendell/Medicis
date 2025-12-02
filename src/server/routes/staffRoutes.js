@@ -41,6 +41,30 @@ app.get("/staff_info", async (req, res)=>{
     }
 });
 
+app.post("/search-patient-id", async (req, res)=>{
+    try{
+        const [query] = await db.query(
+            "SELECT * FROM patient WHERE patient_id = ?", [req.body.user_id]
+        )
+
+        if(query.length > 0){
+            function formatDate(d) {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, "0");
+                const day = String(d.getDate()).padStart(2, "0");
+                return `${year}/${month}/${day}`;
+            }
+            query[0].date_of_birth = formatDate(query[0].date_of_birth)
+
+            return res.status(200).json({ success: true, message: "user exist", data: query[0] })
+        }
+        return res.status(404).json({ success: false, message: "user not exist" })
+    }
+    catch(err){
+        return res.status(500).json({ success: false, message: "Internal Server Error" })
+    }
+});
+
 app.get('/logout', (req, res) => {
     if (req.session) {
         req.session.destroy(err => {
