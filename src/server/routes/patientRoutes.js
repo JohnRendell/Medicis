@@ -122,10 +122,7 @@ app.post('/login', login_account_middleware, async (req, res) => {
             role: authenticatedUser.role
         };
 
-        console.log(authenticatedUser.role)
-
         if(authenticatedUser.role == "Staff"){
-          console.log("I am staff")
           req.session.isStaff = true
         }
 
