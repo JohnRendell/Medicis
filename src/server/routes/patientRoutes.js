@@ -6,7 +6,7 @@ const db = require("../config/db");
 const bcrypt = require("bcrypt");
 // PATIENT PAGESSSSSSSSSS --------------------------------------------------- 
 
-const { getUserById, getPatientById, getAppointmentstByPatientId } = require('../models/patient_session');
+const { getUserById, getPatientById, getScheduledAppointmentsByPatientId, getCompletedAppointmentByPatientId } = require('../models/patient_session');
 
 
 // if not logged in then redirect to login page
@@ -255,12 +255,27 @@ app.patch('/update-patient-info', LoginAuth, validate_edit_info, async (req, res
   }
 });
 
-app.get('/loadappointmentinfo', LoginAuth, async (req,res) =>{
+app.get('/loadcompleted_appointmentinfo', LoginAuth, async (req,res) =>{
   try {
     const userId = req.session.user.user_id;
     const patient_info = await getPatientById(userId); 
     const patient_id = patient_info.patient_id; 
-    const patient_appointments = await getAppointmentstByPatientId(patient_id);
+    const patient_appointments = await getCompletedAppointmentByPatientId(patient_id);
+    
+    res.json(patient_appointments);
+    
+} catch(error) {
+    console.error("Error loading appointment info:", error);
+    res.status(500).send('Server error');
+}
+});
+
+app.get('/loadscheduled_appointmentinfo', LoginAuth, async (req,res) =>{
+  try {
+    const userId = req.session.user.user_id;
+    const patient_info = await getPatientById(userId); 
+    const patient_id = patient_info.patient_id; 
+    const patient_appointments = await getScheduledAppointmentsByPatientId(patient_id);
     
     res.json(patient_appointments);
     

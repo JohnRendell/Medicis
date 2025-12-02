@@ -14,63 +14,10 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Dumping structure for table healthcare_db.appointment
-CREATE TABLE IF NOT EXISTS `appointment` (
-  `appointment_id` int NOT NULL AUTO_INCREMENT,
-  `status` enum('scheduled','completed','cancelled') NOT NULL DEFAULT 'scheduled',
-  `staff_id` int DEFAULT NULL,
-  `patient_id` int DEFAULT NULL,
-  `appointment_time` datetime NOT NULL,
-  `type` enum('online','walk-in') NOT NULL,
-  PRIMARY KEY (`appointment_id`),
-  KEY `patient_id` (`patient_id`),
-  KEY `staff_id` (`staff_id`),
-  CONSTRAINT `FK__patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `FK_appointment_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Dumping data for table healthcare_db.appointment: ~2 rows (approximately)
-DELETE FROM `appointment`;
-INSERT INTO `appointment` (`appointment_id`, `status`, `staff_id`, `patient_id`, `appointment_time`, `type`) VALUES
-	(1, 'scheduled', NULL, 1, '2025-11-28 17:00:39', 'online'),
-	(2, 'scheduled', NULL, 2, '2025-12-01 10:00:00', 'online');
-
--- Dumping structure for table healthcare_db.billing
-CREATE TABLE IF NOT EXISTS `billing` (
-  `billing_id` int NOT NULL AUTO_INCREMENT,
-  `patient_id` int DEFAULT NULL,
-  `appointment_id` int DEFAULT NULL,
-  `amount_due` decimal(10,2) NOT NULL,
-  `due_date` date NOT NULL,
-  `status` enum('Paid','Partially_Paid','Unpaid') NOT NULL DEFAULT 'Unpaid',
-  PRIMARY KEY (`billing_id`),
-  KEY `patient_id` (`patient_id`),
-  KEY `appointment_id` (`appointment_id`),
-  CONSTRAINT `FK_billing_appointment` FOREIGN KEY (`appointment_id`) REFERENCES `appointment` (`appointment_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `FK_billing_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Dumping data for table healthcare_db.billing: ~1 rows (approximately)
-DELETE FROM `billing`;
-INSERT INTO `billing` (`billing_id`, `patient_id`, `appointment_id`, `amount_due`, `due_date`, `status`) VALUES
-	(1, 1, 1, 500.00, '2025-12-01', 'Unpaid');
-
--- Dumping structure for table healthcare_db.online_payment
-CREATE TABLE IF NOT EXISTS `online_payment` (
-  `online_payment_id` int NOT NULL AUTO_INCREMENT,
-  `payment_id` int NOT NULL,
-  `gateway` varchar(50) NOT NULL,
-  PRIMARY KEY (`online_payment_id`),
-  KEY `payment_id` (`payment_id`),
-  CONSTRAINT `FK_online_payment_payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`payment_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Dumping data for table healthcare_db.online_payment: ~0 rows (approximately)
-DELETE FROM `online_payment`;
-
 -- Dumping structure for table healthcare_db.patient
 CREATE TABLE IF NOT EXISTS `patient` (
   `patient_id` int NOT NULL AUTO_INCREMENT,
+  `diagnosis` varchar(255) NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `email` varchar(255) NOT NULL,
   `phone` varchar(20) NOT NULL,
@@ -86,70 +33,11 @@ CREATE TABLE IF NOT EXISTS `patient` (
 
 -- Dumping data for table healthcare_db.patient: ~4 rows (approximately)
 DELETE FROM `patient`;
-INSERT INTO `patient` (`patient_id`, `name`, `email`, `phone`, `date_of_birth`, `address`, `user_id`, `sex`, `age`) VALUES
-	(1, 'Nigel Antipolo', 'nigelpogiako@gmail.com', '09155526780', '2025-10-15', 'Mars Earth', NULL, 'Male', 100),
-	(2, 'pogiNigel', 'apogiako@gmail.com', '0915151515111', '2006-10-27', 'Jupiter', 11, 'Male', 19),
-	(3, 'Juan Dela Cruzffff', 'admin@gmail.com', '09123456789', '2025-11-04', 'Juipieter', 12, 'Male', 67),
-	(4, 'Nigel Antipolo', 'nigel@gmail.com', '08277478510', '2003-04-22', 'Sa puso mo', 13, 'Male', 22);
-
--- Dumping structure for table healthcare_db.payment
-CREATE TABLE IF NOT EXISTS `payment` (
-  `payment_id` int NOT NULL AUTO_INCREMENT,
-  `method` enum('Cash','Credit Card','Online') NOT NULL,
-  `amount_paid` decimal(10,2) NOT NULL,
-  `bill_id` int NOT NULL,
-  `payment_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`payment_id`),
-  KEY `bill_id` (`bill_id`),
-  CONSTRAINT `FK_payment_billing` FOREIGN KEY (`bill_id`) REFERENCES `billing` (`billing_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Dumping data for table healthcare_db.payment: ~0 rows (approximately)
-DELETE FROM `payment`;
-
--- Dumping structure for table healthcare_db.receipt
-CREATE TABLE IF NOT EXISTS `receipt` (
-  `receipt_id` int NOT NULL AUTO_INCREMENT,
-  `payment_id` int NOT NULL,
-  `issued_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`receipt_id`) USING BTREE,
-  KEY `payment_id` (`payment_id`),
-  CONSTRAINT `FK_receipt_payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`payment_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Dumping data for table healthcare_db.receipt: ~0 rows (approximately)
-DELETE FROM `receipt`;
-
--- Dumping structure for table healthcare_db.staff
-CREATE TABLE IF NOT EXISTS `staff` (
-  `staff_id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `position` enum('doctor','nurse') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `user_id` int DEFAULT NULL,
-  PRIMARY KEY (`staff_id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `FK_staff_user_account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Dumping data for table healthcare_db.staff: ~0 rows (approximately)
-DELETE FROM `staff`;
-
--- Dumping structure for table healthcare_db.user_account
-CREATE TABLE IF NOT EXISTS `user_account` (
-  `user_id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role` enum('User','Staff','Admin','Cashier') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'User',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Dumping data for table healthcare_db.user_account: ~3 rows (approximately)
-DELETE FROM `user_account`;
-INSERT INTO `user_account` (`user_id`, `username`, `password`, `role`, `created_at`) VALUES
-	(11, 'admin123', '$2b$10$Z1uCwQe8YxOkVC/Vp56Qyu4WUy3HLQPuiROKvpdmzYPRwQMGIykQS', 'Staff', '2025-11-28 00:31:44'),
-	(12, 'abcd123', '$2b$10$sH2/nRakZuntNGq0xQhJPe1zjpSEyCoWixTlC8srhlVKudDZYS1/W', 'User', '2025-11-28 07:16:34'),
-	(13, 'nigel123', '$2b$10$EsUHIAd/xCF/Ovd7wGWhMeXTmatAUte81xeNZH4cODeQ6EnVOm.RO', 'User', '2025-12-01 16:29:24');
+INSERT INTO `patient` (`patient_id`, `diagnosis`, `name`, `email`, `phone`, `date_of_birth`, `address`, `user_id`, `sex`, `age`) VALUES
+	(1, '', 'Nigel Antipolo', 'nigelpogiako@gmail.com', '09155526780', '2025-10-15', 'Mars Earth', NULL, 'Male', 100),
+	(2, '', 'pogiNigel', 'apogiako@gmail.com', '0915151515111', '2006-10-27', 'Jupiter', 11, 'Male', 19),
+	(3, '', 'Juan Dela Cruzffff', 'admin@gmail.com', '09123456789', '2025-11-04', 'Juipieter', 12, 'Male', 67),
+	(4, '', 'Nigel Antipolo', 'nigel@gmail.com', '08277478510', '2003-04-22', 'Sa puso mo', 13, 'Male', 22);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

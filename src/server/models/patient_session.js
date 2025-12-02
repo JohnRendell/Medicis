@@ -19,11 +19,17 @@ async function getPatientById(userId) {
 
 // node src/server/models/patient_session.js
 
-async function getAppointmentstByPatientId(userId) {
+async function getScheduledAppointmentsByPatientId(userId) {
   const [rows] = await db.query(
-    "SELECT * FROM appointment WHERE patient_id = ?",[userId]);
+    "SELECT * FROM appointment WHERE patient_id = ? AND status = 'scheduled'",[userId]);
   return rows;  
 }
 
+async function getCompletedAppointmentByPatientId(userId) {
+  const [rows] = await db.query(
+    "SELECT * FROM appointment WHERE patient_id = ? AND status = 'completed'", [userId]
+  );
+  return rows;  
+}
 
-module.exports = { getUserById,getPatientById, getAppointmentstByPatientId };
+module.exports = { getUserById,getPatientById, getScheduledAppointmentsByPatientId, getCompletedAppointmentByPatientId};
