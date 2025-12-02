@@ -48,7 +48,7 @@
             </div>
         </nav>
 
-        <!-- Main Content (leave room for fixed sidebar) -->
+        <!-- Main Content -->
         <main class="main-content">
             <div class="page-inner">
                 <header class="dashboard-header">
@@ -61,13 +61,13 @@
                     <div class="card search-card">
                         <h3>Search Patient</h3>
                         <label for="patient-id">Enter Patient ID:</label>
-                        <input type="text" id="patient-id" placeholder="1234">
+                        <div class="search-card-input-group">
+                            <input type="text" id="patient-id" placeholder="1234">
+                            <button class="search-card-btn" type="button">Search</button>
+                        </div>
                     </div>
                     <div class="card diagnosis-card">
-                        <h3>Diagnosis</h3>
-                        <p>Check Patient Diagnosis</p>
-                        <!-- relative link to Diagnosis.html in same folder -->
-                        <a href="./Diagnosis.html" class="arrow-link" aria-label="Go to Diagnosis">➜</a>
+                        <h1><a href="/pages/Staff/Diagnosis.html" class="arrow-link" aria-label="Go to Diagnosis">DIAGNOSIS</a></h1>
                     </div>
                 </div>
 
@@ -97,15 +97,15 @@
                                 <span>12/12/1945</span>
                             </div>
                             <div class="detail-row">
-                                <label>Address :</label>
+                                <label>Address:</label>
                                 <span>Mars</span>
                             </div>
                             <div class="detail-row">
-                                <label>Email :</label>
+                                <label>Email:</label>
                                 <span>jdelacruz@gmail.com</span>
                             </div>
                             <div class="detail-row">
-                                <label>Phone :</label>
+                                <label>Phone:</label>
                                 <span>09123456789</span>
                             </div>
                         </div>
