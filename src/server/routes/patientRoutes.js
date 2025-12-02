@@ -6,7 +6,7 @@ const db = require("../config/db");
 const bcrypt = require("bcrypt");
 // PATIENT PAGESSSSSSSSSS --------------------------------------------------- 
 
-const { getUserById, getPatientById } = require('../models/patient_session');
+const { getUserById, getPatientById, getAppointmentstByPatientId } = require('../models/patient_session');
 
 
 // if not logged in then redirect to login page
@@ -256,6 +256,50 @@ app.patch('/update-patient-info', LoginAuth, validate_edit_info, async (req, res
   console.error('Error updating patient info:', error);
     res.status(500).json({ success: false, message: "Internal Server Error", logs: error });
   }
+});
+
+app.get('/loadappointmentinfo', LoginAuth, async (req,res) =>{
+  try {
+    const userId = req.session.user.user_id;
+    const patient_info = await getPatientById(userId); 
+    const patient_id = patient_info.patient_id; 
+    const patient_appointments = await getAppointmentstByPatientId(patient_id);
+    
+    res.json(patient_appointments);
+    
+} catch(error) {
+    console.error("Error loading appointment info:", error);
+    res.status(500).send('Server error');
+}
+});
+
+
+app.post('/createappointment', LoginAuth, async (req,res) =>{
+ 
+  try {
+    const userId = req.session.user.user_id;
+    const patient_info = await getPatientById(userId); 
+    const patient_id = patient_info.patient_id; 
+
+
+        const { appointment_datetime } = req.body;
+
+const [result] = await db.query(
+  "INSERT INTO appointment (patient_id, appointment_time) VALUES (?, ?)",
+  [patient_id, appointment_datetime]
+);
+
+res.status(201).json({ 
+  message: 'Appointment created successfully.', 
+  appointment: result.insertId
+  
+});
+
+        
+} catch(error) {
+    console.error("Error Creating Appointment:", error);
+    res.status(500).send('Server error');
+}
 });
 
 // LOGOUT ROUTE

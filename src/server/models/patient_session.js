@@ -19,5 +19,11 @@ async function getPatientById(userId) {
 
 // node src/server/models/patient_session.js
 
+async function getAppointmentstByPatientId(userId) {
+  const [rows] = await db.query(
+    "SELECT * FROM appointment WHERE patient_id = ?",[userId]);
+  return rows;  
+}
 
-module.exports = { getUserById,getPatientById };
+
+module.exports = { getUserById,getPatientById, getAppointmentstByPatientId };

@@ -10,11 +10,11 @@
 //     phone: '09123456789'
 // };
 
-let appointmentData = [
-    { id: 'APT-010', date: '2025-11-10', time: '09:00 AM', doctor: 'Dr. Maria Reyes', status: 'Completed' },
-    { id: 'APT-009', date: '2025-10-18', time: '02:30 PM', doctor: 'Dr. Carlo Santos', status: 'Cancelled' },
-    { id: 'APT-008', date: '2025-09-05', time: '11:15 AM', doctor: 'Dr. Smith', status: 'Completed' }
-];
+// let appointmentData = [
+//     { id: 'APT-010', date: '2025-11-10', time: '09:00 AM', doctor: 'Dr. Maria Reyes', status: 'Completed' },
+//     { id: 'APT-009', date: '2025-10-18', time: '02:30 PM', doctor: 'Dr. Carlo Santos', status: 'Cancelled' },
+//     { id: 'APT-008', date: '2025-09-05', time: '11:15 AM', doctor: 'Dr. Smith', status: 'Completed' }
+// ];
 
 const billingData = [
     { date: '2025-11-10', description: 'General Checkup', provider: 'Metro Hospital', amount: 2500, status: 'Paid' },
@@ -42,18 +42,16 @@ const editForm = document.getElementById('edit-form');
 const updateInfoBtn = document.getElementById('update-info-btn');
 
     // Schedule appointment modal elements
-    const scheduleApptOverlay = document.getElementById('schedule-appt-overlay');
-    const scheduleApptForm = document.getElementById('schedule-appt-form');
-    const inputApptDatetime = document.getElementById('input-appt-datetime');
-    const inputApptDoctor = document.getElementById('input-appt-doctor');
-    const inputApptHospital = document.getElementById('input-appt-hospital');
-    const inputApptType = document.getElementById('input-appt-type');
-    const inputApptDesc = document.getElementById('input-appt-desc');
-    const cancelScheduleBtn = document.getElementById('cancel-schedule-btn');
+const scheduleApptOverlay = document.getElementById('schedule-appt-overlay');
+const scheduleApptForm = document.getElementById('schedule-appt-form');
+const inputApptDatetime = document.getElementById('input-appt-datetime');
+const inputApptType = document.getElementById('input-appt-type');
+const cancelScheduleBtn = document.getElementById('cancel-schedule-btn');
 
+    // const inputApptDesc = document.getElementById('input-appt-desc');
+    // const inputApptDoctor = document.getElementById('input-appt-doctor');
+    // const inputApptHospital = document.getElementById('input-appt-hospital');
 
-
-    // Explicitly hide modals on page load to prevent auto open
     if (scheduleApptOverlay) {
         scheduleApptOverlay.hidden = true;
         scheduleApptOverlay.style.display = 'none';
@@ -82,40 +80,6 @@ const updateInfoBtn = document.getElementById('update-info-btn');
         return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/${d.getFullYear()}`;
     }
 
-
-
-    function renderAppointments() {
-        const tbody = document.getElementById('appointments-tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        appointmentData.forEach(a => {
-            const tr = document.createElement('tr');
-            let displayDate = a.date || '';
-            let displayTime = a.time || '';
-            
-            if (a.date && a.date.includes('T')) {
-                const d = new Date(a.date);
-                if (!isNaN(d)) {
-                    displayDate = `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/${d.getFullYear()}`;
-                    displayTime = displayTime || d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                }
-            } else {
-                displayDate = formatDateDisplay(a.date);
-            }
-
-            const lower = (a.status || '').toLowerCase();
-            const statusClass = lower === 'completed' ? 'status completed' : lower === 'pending' ? 'status-pending' : 'status';
-
-            tr.innerHTML = `
-                <td>${a.id}</td>
-                <td>${displayDate}</td>
-                <td>${displayTime}</td>
-                <td>${a.doctor || ''}</td>
-                <td><span class="${statusClass}">${a.status || ''}</span></td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
 
     // NEW: render top "upcoming appointments" area (shows next 3 future appts)
     function renderUpcomingAppointments() {
