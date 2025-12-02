@@ -121,8 +121,12 @@ app.post('/login', login_account_middleware, async (req, res) => {
             username: authenticatedUser.username,
             role: authenticatedUser.role
         };
+
+        if(authenticatedUser.role == "staff"){
+          req.session.isStaff = true
+        }
         req.session.isValid = true
-       res.status(200).json({ success: true, message: "Login successful", redirect: "/redirect/dashboard"});
+        res.status(200).json({ success: true, message: "Login successful", redirect: "/redirect/dashboard"});
     } catch (error) {
         console.error("Session establishment failed:", error);
         res.status(500).json({ 

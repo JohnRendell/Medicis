@@ -1,18 +1,14 @@
 const mysql = require("mysql2");
+const path = require("path");
 
-// const config = mysql.createConnection({
-//      host: "localhost",
-//      user: "admin",
-//      password: "admin",
-//      database: "healthcare_db"
-// })
-
+const env_path = path.join(process.cwd(), "keys.env");
+require("dotenv").config({ path: env_path });
 
 const config = mysql.createConnection({
-    host: '127.0.0.1',
-    user: 'root',
-    password: '',
-    database: 'healthcare_db'
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASS,
+    database: process.env.DATABASE
 })
 
 

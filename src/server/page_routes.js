@@ -25,6 +25,20 @@ router.get("/dashboard", (req, res)=>{
     return res.redirect("/");
 });
 
+router.get("/dashboard", (req, res)=>{
+    let isValid =  req.session.isValid
+    let isStaff = req.session.isStaff;
+
+    if(isValid && isStaff){
+        return res.sendFile(path.join(__dirname, "../public/pages/Staff/staff_dashboard.html"));
+    }
+
+    if(isValid && !isStaff){
+        return res.sendFile(path.join(__dirname, "../public/pages/User/info_Dashboard.html"));   
+    }
+    return res.redirect("/");
+});
+
 router.get("/patientinfo", (req, res)=>{
     let isValid =  req.session.isValid
 
