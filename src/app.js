@@ -59,6 +59,7 @@ app.use("/user", require("./server/routes/userRoutes")); //->>
 //dito naman yung sa routing natin like post, patch, put, delete basically yung usual api natin.
 
 app.use("/patients", require("./server/routes/patientRoutes")); //->>
+app.use("/staff", require("./server/routes/staffRoutes"));
 //same as above dito
 
 //404 page -- pre eto yung invalid page, so kunwari nag type si user ng /redirect/test 

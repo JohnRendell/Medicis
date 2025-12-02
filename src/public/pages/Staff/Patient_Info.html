@@ -16,7 +16,7 @@
             </div>
 
             <div class="menu">
-                <a class="menu-item active" href="/pages/Staff/Patient_Info.html">
+                <a class="menu-item active" href="/redirect/dashboard">
                     <span class="icon">👥</span>
                     <span class="menu-text">Patients</span>
                 </a>
@@ -42,7 +42,7 @@
                     <span class="icon">👤</span>
                     <div class="menu-labels">
                         <span class="menu-text">My Account</span>
-                        <span class="staff-id">Staff ID: 1234</span>
+                        <span class="staff-id" id="staff-id">Staff ID: 1234</span>
                     </div>
                 </a>
             </div>
@@ -53,7 +53,7 @@
             <div class="page-inner">
                 <header class="dashboard-header">
                     <h1>Dashboard</h1>
-                    <p class="welcome-text">Welcome Back, <span class="doctor-name">Dr. Nigel Ung</span></p>
+                    <p class="welcome-text">Welcome Back, <span class="doctor-name" id="staff-name">---</span></p>
                 </header>
 
                 <!-- Action Cards -->
@@ -78,35 +78,35 @@
                         <div class="patient-details">
                             <div class="detail-row">
                                 <label>Name:</label>
-                                <span>Dela Cruz, Juan</span>
+                                <span id="patient-name">--</span>
                             </div>
                             <div class="detail-row">
                                 <label>ID:</label>
-                                <span>1234</span>
+                                <span id="patient-id">---</span>
                             </div>
                             <div class="detail-row">
                                 <label>Gender:</label>
-                                <span>Male</span>
+                                <span id="patient-gender">----</span>
                             </div>
                             <div class="detail-row">
                                 <label>Age:</label>
-                                <span>36</span>
+                                <span id="patient-age">----</span>
                             </div>
                             <div class="detail-row">
                                 <label>Date of Birth:</label>
-                                <span>12/12/1945</span>
+                                <span id="patient-birthday">----/--/--</span>
                             </div>
                             <div class="detail-row">
                                 <label>Address :</label>
-                                <span>Mars</span>
+                                <span id="patient-address">----</span>
                             </div>
                             <div class="detail-row">
                                 <label>Email :</label>
-                                <span>jdelacruz@gmail.com</span>
+                                <span id="patient-email">----</span>
                             </div>
                             <div class="detail-row">
                                 <label>Phone :</label>
-                                <span>09123456789</span>
+                                <span id="patient-phone">----</span>
                             </div>
                         </div>
                         <div class="patient-avatar">
@@ -118,10 +118,27 @@
 
                 <!-- Sign Out Button -->
                 <div class="sign-out-container">
-                    <button class="sign-out-btn" type="button" onclick="window.location.href = '/patients/logout'">Sign Out</button>
+                    <button class="sign-out-btn" type="button" onclick="window.location.href = '/staff/logout'">Sign Out</button>
                 </div>
             </div>
         </main>
     </div>
 </body>
 </html>
+
+<script>
+    window.onload = async ()=>{
+       const query = await fetch("/staff/staff_info", {
+            method: "GET"
+       });
+
+       const res = await query.json();
+
+       if(res.success){
+            document.getElementById("staff-id").innerHTML = "Staff ID: " + res.data.staff_id
+            document.getElementById("staff-name").innerHTML = res.data.name
+            return
+       }
+       alert(res.message)
+    }
+</script>
