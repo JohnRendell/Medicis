@@ -138,21 +138,41 @@ body{
 .action-cards{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:40px}
 .card{padding:25px;border-radius:12px;color:#fff}
 .search-card{background:linear-gradient(180deg,var(--primary-color),var(--primary-dark))}
-.diagnosis-card{background:linear-gradient(180deg,var(--primary-color),var(--primary-dark));display:flex;flex-direction:column;justify-content:space-between}
-.search-card h3,.diagnosis-card h3{font-size:18px;margin-bottom:12px;font-weight:600}
+.search-card h3{font-size:18px;margin-bottom:15px;font-weight:600}
+.search-card label{display:block;margin-bottom:8px;font-size:14px;color:rgba(255,255,255,0.8)}
+.search-card-input-group{display:flex;gap:10px;width:100%}
+.search-card input{flex:1;padding:10px 12px;border:none;border-radius:6px;background:#fff;color:var(--text-dark);font-size:14px}
+.search-card-btn{
+    background:#fff;
+    color:var(--primary-color);
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+    font-weight:600;
+    cursor:pointer;
+    font-size:14px;
+    white-space:nowrap;
+}
+.search-card-btn:hover{background:rgba(255,255,255,0.9)}
+.diagnosis-card{
+    background:linear-gradient(180deg,var(--primary-color),var(--primary-dark));
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:15px 25px;
+}
+.search-card h3,.diagnosis-card h3{font-size:18px;margin-bottom:0;font-weight:600}
 .search-card label{display:block;margin-bottom:8px;font-size:14px;color:rgba(255,255,255,0.8)}
 .search-card input{width:100%;padding:10px 12px;border:none;border-radius:6px;background:#fff;color:var(--text-dark);font-size:14px}
 
 .arrow-link{
     color:var(--btn-text-color);
     text-decoration:none;
-    font-size:24px;
-    align-self:flex-end;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:56px;height:56px;border-radius:12px;
-    background:rgba(255,255,255,0.08);
+    font-size:18px;
+    font-weight:600;
+    display:inline-block;
 }
 
 /* PATIENT INFO */

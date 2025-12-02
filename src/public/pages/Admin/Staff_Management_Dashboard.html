@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Management Dashboard - Medicis+</title>
+    <link rel="stylesheet" href="/pages/Admin/style.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="/images/medicis_logo.png" alt="Medicis+ Logo">
+            <div class="logo-text">Medicis+</div>
+        </div>
+        <button class="nav-button active">👤 Staffs</button>
+        
+        <div class="user-info">
+            <div class="user-info-icon">👤</div>
+            <div class="user-info-content">
+                <div class="user-info-name">Admin</div>
+                <div class="user-info-id">Staff ID: admin</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="header-title">Admin Dashboard</h1>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <label class="search-label">Search Staff</label>
+            <input 
+                type="text" 
+                class="search-input" 
+                id="searchInput" 
+                placeholder="Enter Staff ID"
+            >
+            <button class="btn-add" onclick="openAddModal()">👤 Add Staff</button>
+        </div>
+
+        <!-- Staff Container -->
+        <div class="staff-container">
+            <h2 class="staff-title">Staff List</h2>
+            <table class="staff-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Staff ID</th>
+                        <th>Position</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="staffTableBody">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                No staff members found.
+            </div>
+        </div>
+
+        <!-- SIGN OUT (moved below the staff-container, right aligned) -->
+        <div class="signout-container">
+            <button id="signout-button" class="btn-cancel signout-btn" title="Sign out">Sign Out</button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Staff Modal -->
+    <div id="staffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Add Staff</div>
+            <form id="staffForm" onsubmit="handleFormSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" id="nameInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Staff ID</label>
+                    <input type="text" class="form-input" id="staffIdInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Position</label>
+                    <input type="text" class="form-input" id="positionInput" required>
+                </div>
+
+                <!-- NEW: Username & Password fields (placed under Position) -->
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="usernameInput" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="passwordInput" autocomplete="new-password">
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-submit" id="submitBtn">Add Staff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Confirm Delete</div>
+            <p style="margin-bottom: 25px; color: #333;">Are you sure you want to remove this staff member?</p>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-danger" onclick="confirmDelete()">🗑️ Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        let staffList = [
+            {
+                id: 1,
+                name: 'Nigel Ung',
+                staffId: '1234',
+                position: 'Doctor'
+            }
+        ];
+
+        let editingId = null;
+        let deletingId = null;
+
+        // Initialize
+        function init() {
+            renderStaffTable();
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+        }
+
+        // Render staff table
+        function renderStaffTable(data = staffList) {
+            const tbody = document.getElementById('staffTableBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            data.forEach(staff => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${staff.name}</td>
+                    <td>${staff.staffId}</td>
+                    <td>${staff.position}</td>
+                    <td>
+                        <button class="btn-remove" onclick="openDeleteModal(${staff.id})">👤 Remove</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Open add modal
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('modalTitle').innerText = 'Add Staff';
+            document.getElementById('staffForm').reset();
+            document.getElementById('staffIdInput').disabled = false;
+            document.getElementById('submitBtn').innerText = 'Add Staff';
+            // ensure username/password cleared
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('staffModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('staffModal').classList.remove('active');
+            editingId = null;
+        }
+
+        // Handle form submit
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('nameInput').value,
+                staffId: document.getElementById('staffIdInput').value,
+                position: document.getElementById('positionInput').value,
+                username: document.getElementById('usernameInput').value || '',
+                password: document.getElementById('passwordInput').value || ''
+            };
+            
+            if (editingId) {
+                const staff = staffList.find(s => s.id === editingId);
+                Object.assign(staff, formData);
+                showAlert('Staff member updated successfully!', 'success');
+            } else {
+                const newStaff = {
+                    id: Math.max(...staffList.map(s => s.id), 0) + 1,
+                    ...formData
+                };
+                staffList.push(newStaff);
+                showAlert('Staff member added successfully!', 'success');
+            }
+            
+            renderStaffTable();
+            closeModal();
+        }
+
+        // Open delete modal
+        function openDeleteModal(id) {
+            deletingId = id;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        // Close delete modal
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deletingId = null;
+        }
+
+        // Confirm delete
+        function confirmDelete() {
+            staffList = staffList.filter(s => s.id !== deletingId);
+            showAlert('Staff member removed successfully!', 'success');
+            renderStaffTable();
+            closeDeleteModal();
+        }
+
+        // Handle search
+        function handleSearch(event) {
+            const searchTerm = event.target.value.toLowerCase();
+            const filtered = staffList.filter(staff => 
+                staff.staffId.toLowerCase().includes(searchTerm) ||
+                staff.name.toLowerCase().includes(searchTerm)
+            );
+            renderStaffTable(filtered);
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerText = message;
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => alert.remove(), 3000);
+        }
+
+        // Sign out logic: immediate client-side redirect to the login page
+        function Logout() {
+            window.location.href = '/pages/login.html';
+        }
+
+        // Wire up signout + init once after DOM loaded
+        window.addEventListener('load', () => {
+            const signoutButton = document.getElementById('signout-button');
+            if (signoutButton) {
+                signoutButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    Logout();
+                });
+            }
+
+            if (typeof init === 'function') {
+                try {
+                    init();
+                } catch (err) {
+                    console.error('init() error', err);
+                }
+            }
+        });
+
+        // Close modals on Escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                if (typeof closeModal === 'function') closeModal();
+                if (typeof closeDeleteModal === 'function') closeDeleteModal();
+            }
+        });
+    </script>
+</body>
+</html>
