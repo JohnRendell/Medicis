@@ -32,4 +32,12 @@ async function getCompletedAppointmentByPatientId(userId) {
   return rows;  
 }
 
-module.exports = { getUserById,getPatientById, getScheduledAppointmentsByPatientId, getCompletedAppointmentByPatientId};
+async function getBillingByPatientId(userId) {
+  const [rows] = await db.query(
+    "SELECT * FROM billing WHERE patient_id = ? ", [userId]
+  );
+  return rows;  
+}
+
+
+module.exports = { getUserById,getPatientById, getScheduledAppointmentsByPatientId, getCompletedAppointmentByPatientId, getBillingByPatientId};

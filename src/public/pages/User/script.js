@@ -16,7 +16,7 @@
 //     { id: 'APT-008', date: '2025-09-05', time: '11:15 AM', doctor: 'Dr. Smith', status: 'Completed' }
 // ];
 
-const billingData = [
+const billingDatas = [
     { date: '2025-11-10', description: 'General Checkup', provider: 'Metro Hospital', amount: 2500, status: 'Paid' },
     { date: '2025-10-18', description: 'Blood Test', provider: 'City Lab Center', amount: 3200, status: 'Paid' },
     { date: '2025-09-05', description: 'Cardiology Consultation', provider: 'Heart Care Clinic', amount: 4000, status: 'Pending' },
@@ -130,7 +130,7 @@ const cancelScheduleBtn = document.getElementById('cancel-schedule-btn');
         const tbody = document.getElementById('billing-tbody');
         if (!tbody) return;
         tbody.innerHTML = '';
-        billingData.forEach(b => {
+        billingDatas.forEach(b => {
             const tr = document.createElement('tr');
             const statusClass = (b.status || '').toLowerCase() === 'paid' ? 'status-paid' : 'status-pending';
             tr.innerHTML = `

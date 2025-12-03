@@ -6,7 +6,7 @@ const db = require("../config/db");
 const bcrypt = require("bcrypt");
 // PATIENT PAGESSSSSSSSSS --------------------------------------------------- 
 
-const { getUserById, getPatientById, getScheduledAppointmentsByPatientId, getCompletedAppointmentByPatientId } = require('../models/patient_session');
+const { getUserById, getPatientById, getScheduledAppointmentsByPatientId, getCompletedAppointmentByPatientId, getBillingByPatientId } = require('../models/patient_session');
 
 
 // if not logged in then redirect to login page
@@ -313,6 +313,24 @@ res.status(201).json({
     res.status(500).send('Server error');
 }
 });
+
+app.get('/loadbillings', LoginAuth, async (req,res) => {
+
+    try{
+        const userId = req.session.user.user_id;
+        const patient_info = await getPatientById(userId);
+        const patient_id = patient_info.patient_id;  
+        const billing_info = await getBillingByPatientId(patient_id);
+      
+    res.json(billing_info);
+    
+} catch(error) {
+    console.error("Error loading appointment info:", error);
+    res.status(500).send('Server error');
+}
+});
+
+
 
 // LOGOUT ROUTE
 app.get('/logout', (req, res) => {
