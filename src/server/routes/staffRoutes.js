@@ -2,6 +2,61 @@ const express = require("express");
 const app = express.Router();
 const db = require("../config/db");
 
+app.get("/display-appointment", async (req, res)=>{
+    try{
+        if(!req.session.isStaff){
+            return redirect("/redirect/dashboard")
+        }
+
+        const [appointment_tbl] = await db.query(
+            "SELECT * FROM appointment"
+        )
+
+        if(appointment_tbl.length > 0){
+            const map = appointment_tbl.map((data) => ({
+                appointment_id: data.appointment_id,
+                status: data.status,
+                patient_id: data.patient_id,
+                appointment_time: data.appointment_time
+            }));
+            return res.status(200).json({ success: true, message: "Retrieve appointment data success", data: map })
+        }
+        return res.status(404).json({ success: false, message: "No appointments yet" })
+    }
+    catch(err){
+        return res.status(500).json({ success: false, message: "Internal Server", logs: err })
+    }
+});
+
+app.get("/display-billing", async (req, res)=>{
+    try{
+        if(!req.session.isStaff){
+            return redirect("/redirect/dashboard")
+        }
+
+        const [billing_tbl] = await db.query(
+            "SELECT * FROM billing"
+        )
+
+        if(billing_tbl.length > 0){
+            const map = billing_tbl.map((data) => ({
+                billing_id: data.billing_id,
+                amount_paid: data.amount_paid,
+                patient_id: data.patient_id,
+                appointment_id: data.appointment_id,
+                amount_due: data.amount_due,
+                due_date: data.due_date,
+                status: data.status
+            }));
+            return res.status(200).json({ success: true, message: "Retrieve appointment data success", data: map })
+        }
+        return res.status(404).json({ success: false, message: "No appointments yet" })
+    }
+    catch(err){
+        return res.status(500).json({ success: false, message: "Internal Server", logs: err })
+    }
+});
+
 app.get("/staff_info", async (req, res)=>{
     try{
         const authenticatedUser = req.session.user

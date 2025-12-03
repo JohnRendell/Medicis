@@ -20,12 +20,12 @@
           <span class="menu-text">Patients</span>
         </a>
 
-        <a class="menu-item active" href="/pages/Staff/Appointments.html">
+        <a class="menu-item active" href="/redirect/appointment">
           <span class="icon">📅</span>
           <span class="menu-text">Appointments</span>
         </a>
 
-        <a class="menu-item" href="/pages/Staff/manage_billing.html">
+        <a class="menu-item" href="/redirect/billing">
           <span class="icon">💳</span>
           <span class="menu-text">Billing</span>
         </a>
@@ -41,7 +41,7 @@
           <span class="icon">👤</span>
           <div class="menu-labels">
             <span class="menu-text">My Account</span>
-            <span class="staff-id">Staff ID: 1234</span>
+            <span class="staff-id" id="staff-id">Staff ID: 1234</span>
           </div>
         </a>
       </div>
@@ -52,10 +52,10 @@
         <header class="dashboard-header header-row">
           <div>
             <h1>Your Appointments</h1>
-            <p class="welcome-text">Welcome Back, <span class="doctor-name">Juan Dela Cruz</span></p>
+            <p class="welcome-text">Welcome Back, <span class="doctor-name" id="staff-name">Juan Dela Cruz</span></p>
           </div>
           <div class="sign-out-container">
-            <button class="sign-out-btn" type="button">Sign Out</button>
+            <button class="sign-out-btn" type="button" onclick="window.location.href = '/staff/logout'">Sign Out</button>
           </div>
         </header>
 
@@ -73,11 +73,8 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- backend will inject rows here -->
-                <tr class="empty">
-                  <td colspan="5">No appointments to display</td>
-                </tr>
+              <tbody id="populate_data">
+               
               </tbody>
             </table>
           </div>
@@ -87,3 +84,88 @@
   </div>
 </body>
 </html>
+<script>
+  function formatDate(isoString) {
+      const d = new Date(isoString);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatTime(isoString) {
+      const d = new Date(isoString);
+      const hours = String(d.getHours()).padStart(2, "0");
+      const minutes = String(d.getMinutes()).padStart(2, "0");
+      return `${hours}:${minutes}`;
+    }
+
+    async function load_staff_into() {
+      const query = await fetch("/staff/staff_info", {
+        method: "GET"
+      });
+
+      const res = await query.json();
+
+      if (res.success) {
+        document.getElementById("staff-id").innerHTML = "Staff ID: " + res.data.staff_id
+        document.getElementById("staff-name").innerHTML = res.data.name
+        return
+      }
+      alert(res.message)
+    }
+
+  window.onload = async () => {
+    load_staff_into()
+    const tbody = document.getElementById("populate_data");
+
+    try{
+      const query = await fetch("/staff/display-appointment", {
+        method: "GET"
+      });
+
+      const res = await query.json();
+
+      if (res.success && res.data.length > 0) {
+        for (let i = 0; i < res.data.length; i++) {
+          const tr = document.createElement("tr");
+
+          const appointment_ID = document.createElement("td");
+          appointment_ID.appendChild(document.createTextNode(res.data[i].appointment_id));
+
+          const date = document.createElement("td");
+          date.appendChild(document.createTextNode(formatDate(res.data[i].appointment_time)));
+
+          const time = document.createElement("td");
+          time.appendChild(document.createTextNode(formatTime(res.data[i].appointment_time)));
+
+          const patient = document.createElement("td");
+          patient.appendChild(document.createTextNode(res.data[i].patient_id));
+
+          const status = document.createElement("td");
+          status.appendChild(document.createTextNode(res.data[i].status));
+
+          tr.appendChild(appointment_ID);
+          tr.appendChild(date);
+          tr.appendChild(time);
+          tr.appendChild(patient);
+          tr.appendChild(status);
+
+          tbody.appendChild(tr);
+        }
+        return;
+      }
+
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.setAttribute("colspan", 5);
+      td.appendChild(document.createTextNode("No appointments to display"));
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
+    catch(err){
+      alert(err)
+    }
+  };
+
+</script>

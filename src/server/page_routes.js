@@ -30,20 +30,15 @@ router.get("/dashboard", (req, res)=>{
     return res.redirect("/");
 });
 
-router.get("/patientinfo", (req, res)=>{
-    let isValid =  req.session.isValid
-
-    if(isValid){
-        return res.sendFile(path.join(__dirname, "../public/pages/User/info_Dashboard.html"));
-    }
-    return res.redirect("/");
-});
-
 router.get("/appointment", (req, res) => {
     
     let isValid =  req.session.isValid
+    let isStaff = req.session.isStaff;
 
     if (isValid) {
+        if(isStaff){
+            return res.sendFile(path.join(__dirname, "../public/pages/Staff/Appointments.html"));
+        }
         return res.sendFile(path.join(__dirname, "../public/pages/User/Appointment Dashboard.html"));
     }
     
@@ -53,8 +48,12 @@ router.get("/appointment", (req, res) => {
 router.get("/billing", (req, res) => {
     
     let isValid =  req.session.isValid
+    let isStaff = req.session.isStaff;
 
     if (isValid) {
+        if(isStaff){
+            return res.sendFile(path.join(__dirname, "../public/pages/Staff/manage_billing.html"));
+        }
         return res.sendFile(path.join(__dirname, "../public/pages/User/Billing_Receipt_Dashboard.html"));
     }
     

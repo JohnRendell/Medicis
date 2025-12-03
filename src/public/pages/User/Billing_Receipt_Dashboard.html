@@ -14,7 +14,7 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li><a class="nav-btn" href="/redirect/patientinfo"><span class="icon">👤</span> Patient Profile</a></li>
+                <li><a class="nav-btn" href="/redirect/dashboard"><span class="icon">👤</span> Patient Profile</a></li>
                 <li><a class="nav-btn" href="/redirect/appointment"><span class="icon">📅</span> Appointments</a></li>
                 <li><a class="nav-btn active" href="/redirect/billing"><span class="icon">💳</span> Billing</a></li>
             </ul>
@@ -90,6 +90,21 @@
     }
 }
 document.addEventListener('DOMContentLoaded', loadBillingInfo);
+
+async function loadPatientInfo() {
+    try {
+        const response = await fetch('/patients/loadpatientinfo');
+        if (!response.ok) throw new Error('Failed to fetch patient info');
+        let patientData = await response.json();
+
+        if (patientData) {
+            document.getElementById("patient-id-display").innerHTML = patientData.patient_id
+        }
+    } catch (error) {
+        console.error('Error fetching patient info:', error);
+    }
+}
+document.addEventListener('DOMContentLoaded', loadPatientInfo);
 
 async function renderBillingInfo(billings) {
     const tbody = document.getElementById('billing-tbody');

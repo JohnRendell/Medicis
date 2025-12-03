@@ -20,12 +20,12 @@
                     <span class="menu-text">Patients</span>
                 </a>
 
-                <a class="menu-item" href="/pages/Staff/Appointments.html">
+                <a class="menu-item" href="/redirect/appointment">
                     <span class="icon">📅</span>
                     <span class="menu-text">Appointments</span>
                 </a>
 
-                <a class="menu-item active" href="/pages/Staff/manage_billing.html">
+                <a class="menu-item active" href="/redirect/billing">
                     <span class="icon">💳</span>
                     <span class="menu-text">Billing</span>
                 </a>
@@ -40,7 +40,7 @@
           <span class="icon">👤</span>
           <div class="menu-labels">
             <span class="menu-text">My Account</span>
-            <span class="staff-id">Staff ID: 1234</span>
+            <span class="staff-id" id="staff-id">Staff ID: 1234</span>
           </div>
         </a>
       </div>
@@ -53,7 +53,7 @@
             <h1>Billing Overview</h1>
           </div>
           <div class="sign-out-container">
-            <button class="sign-out-btn" type="button">Sign Out</button>
+            <button class="sign-out-btn" type="button" onclick="window.location.href = '/staff/logout'">Sign Out</button>
           </div>
         </header>
 
@@ -64,18 +64,17 @@
             <table class="billing-table" aria-describedby="detailed-billing">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Description</th>
-                  <th>Provider</th>
-                  <th>Amount</th>
+                  <th>ID</th>
+                  <th>Amount Paid</th>
+                  <th>Patient</th>
+                  <th>Appointment ID</th>
+                  <th>Amount due</th>
+                  <th>Due date</th>
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- backend will inject rows here -->
-                <tr class="empty">
-                  <td colspan="5">No billing records to display</td>
-                </tr>
+              <tbody id="populate_table">
+
               </tbody>
             </table>
           </div>
@@ -87,3 +86,87 @@
   </div>
 </body>
 </html>
+<script>
+  async function load_staff_info() {
+    const query = await fetch("/staff/staff_info", {
+      method: "GET"
+    });
+
+    const res = await query.json();
+
+    if (res.success) {
+      document.getElementById("staff-id").innerHTML = "Staff ID: " + res.data.staff_id
+      return
+    }
+    alert(res.message)
+  }
+
+  function formatDate(isoString) {
+      const d = new Date(isoString);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+  window.onload = async ()=>{
+    load_staff_info();
+
+    try{
+      const query = await fetch("/staff/display-billing", {
+        method: "GET"
+      });
+
+      const tbody = document.getElementById("populate_table")
+      const res = await query.json();
+
+      if (res.success && res.data.length > 0) {
+        for (let i = 0; i < res.data.length; i++) {
+          const tr = document.createElement("tr");
+
+          const billing_id = document.createElement("td");
+          billing_id.appendChild(document.createTextNode(res.data[i].billing_id));
+
+          const amount_paid = document.createElement("td");
+          amount_paid.appendChild(document.createTextNode(res.data[i].amount_paid));
+
+          const patient_id = document.createElement("td");
+          patient_id.appendChild(document.createTextNode(res.data[i].patient_id));
+
+          const appointment_id = document.createElement("td");
+          appointment_id.appendChild(document.createTextNode(res.data[i].appointment_id));
+
+          const amount_due = document.createElement("td");
+          amount_due.appendChild(document.createTextNode(res.data[i].amount_due));
+
+          const due_date = document.createElement("td");
+          due_date.appendChild(document.createTextNode(formatDate(res.data[i].due_date)));
+
+          const status = document.createElement("td");
+          status.appendChild(document.createTextNode(res.data[i].status));
+
+          tr.appendChild(billing_id);
+          tr.appendChild(amount_paid);
+          tr.appendChild(patient_id);
+          tr.appendChild(appointment_id);
+          tr.appendChild(amount_due);
+          tr.appendChild(due_date);
+          tr.appendChild(status);
+
+          tbody.appendChild(tr);
+        }
+        return;
+      }
+
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.setAttribute("colspan", 5);
+      td.appendChild(document.createTextNode("No billing records to display"));
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
+    catch(err){
+      alert(err)
+    }
+  }
+</script>
