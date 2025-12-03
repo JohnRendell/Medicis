@@ -33,22 +33,20 @@
         <div id="billing" class="page active">
             <div class="page-header" style="position: relative;">
                 <h1>Billing Overview</h1>
+                <p class="welcome-text">Welcome Back! </p>
                 <button id="signout-button" class="btn-secondary signout-top" title="Sign out" style="position: absolute; top: 15px; right: 10px;">Sign Out</button>
                 <hr>
             </div>
             <div class="billing-container">
                 <div class="billing-summary">
-                    <div class="summary-card">
-                        <h3>Total Amount Due</h3>
-                        <p class="amount due">₱7,300.00</p>
+                    <div class="summary-card" id ="amount_due_div">
+                        
                     </div>
-                    <div class="summary-card">
-                        <h3>Total Paid</h3>
-                        <p class="amount paid">₱8,200.00</p>
+                    <div class="summary-card" id ="amount_paid_div">
+                        
                     </div>
-                    <div class="summary-card">
-                        <h3>Outstanding Balance</h3>
-                        <p class="amount balance">₱-900.00</p>
+                    <div class="summary-card" id ="balance_div">
+
                     </div>
                 </div>
                 <div class="billing-items">
@@ -57,7 +55,6 @@
                         <thead>
                             <tr>
                                 <th>Date</th>
-                                <th>Description</th>
                                 <th>Amount</th>
                                 <th>Status</th>
                             </tr>
@@ -77,6 +74,67 @@
 
     <script src="script.js"></script>
     <script>
+        let billingData = [];
+        async function loadBillingInfo() {
+    try {
+        const response = await fetch('/patients/loadbillings');
+        if (!response.ok) throw new Error('Failed to fetch billing info');
+        
+        billingData = await response.json(); 
+        console.log('Frontend received:', billingData);
+        if (billingData && Array.isArray(billingData)) {
+            renderBillingInfo(billingData); 
+        }
+    } catch (error) {
+        console.error('Error fetching billing info:', error);
+    }
+}
+document.addEventListener('DOMContentLoaded', loadBillingInfo);
+
+async function renderBillingInfo(billings) {
+    const tbody = document.getElementById('billing-tbody');
+    if (!tbody || !Array.isArray(billings)) return;
+    
+    console.log('Rendering', billings.length, 'rows');
+    
+    tbody.innerHTML = billings.map(a => `
+        <tr>
+            <td>${a.due_date ? new Date(a.due_date).toLocaleDateString() : 'No due date'}</td>
+            <td>$${parseFloat(a.amount_due).toFixed(2)}</td>
+            <td><span class="status-${a.status.toLowerCase()}">${a.status}</span></td>
+        </tr>
+    `).join('');
+
+    const totalDue = billings.reduce((sum, a) => sum + parseFloat(a.amount_due || 0), 0);
+    const totalPaid = billings.reduce((sum, a) => sum + parseFloat(a.amount_paid || 0), 0);
+
+    const balance = totalDue - totalPaid;
+
+    const amount_due_div = document.getElementById('amount_due_div');  
+    if (amount_due_div) {  
+        amount_due_div.innerHTML = `
+        <h3>Total Amount Due</h3>
+        <p class="amount due">$${totalDue.toFixed(2)}</p>
+        `;  
+    }
+      const amount_paid_div = document.getElementById('amount_paid_div');
+    if (amount_paid_div) {
+        amount_paid_div.innerHTML = `
+            <h3>Total Amount Paid</h3>
+            <p class="amount paid">$${totalPaid.toFixed(2)}</p>
+        `;
+    }
+      const balance_div = document.getElementById('balance_div');
+    if (balance_div) {
+        balance_div.innerHTML = `
+            <h3>Balance</h3>
+            <p class="amount balance">$${balance.toFixed(2)}</p>
+        `;
+    }
+}
+
+
+
         async function Logout() {
     try {
         const response = await fetch('/patients/logout', {

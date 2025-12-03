@@ -44,11 +44,10 @@
                         <div class="appointment-dates" id="appointment-dates-items">
                             <!-- <div class="date-item"><span class="date-icon">📅</span><span class="date-value">12/01/2025</span></div> -->
                         </div>
-                        <button class="btn-secondary">View Details</button>
                     </div>
                 </div>
                 <div class="recent-appointments">
-                    <h2>Recent Appointments</h2>
+                    <h2>Completed Appointments</h2>
                     <table class="appointments-table">
                         <thead>
                             <tr>
@@ -74,24 +73,80 @@
                 <div class="edit-header">
                     <h2 id="schedule-appt-title">Schedule an Appointment</h2>
                 </div>
-                <form id="schedule-appt-form" class="edit-form" novalidate onsubmit="Create_Appointment(event)">
-                    <div class="form-grid">
-                        <div class="form-field">
-                            <label for="input-appt-datetime">Date & Time</label>
-                            <input id="input-appt-datetime" name="appointment-datetime" type="datetime-local" required>
-                        </div> 
-                    </div>
-                    <div class="edit-actions">
-                        <button type="submit" class="btn-primary" id="submit-schedule-btn">Schedule</button>
-                        <button type="button" id="cancel-schedule-btn" class="btn-secondary">Cancel</button>
-                    </div>
-                </form>
-            </div>
+                    <form id="schedule-appt-form" class="edit-form" novalidate onsubmit="Create_Appointment(event)">
+                        <div class="form-grid">
+                            <div class="form-field">
+                    <label for="input-appt-datetime">Date & Time (8AM-5PM, hours only)</label>
+                    <input id="input-appt-datetime" name="appointment-datetime" type="datetime-local" required step="3600">
+
+                            </div> 
+                        </div>
+                        <div class="edit-actions">
+                            <button type="submit" class="btn-primary" id="submit-schedule-btn">Schedule</button>
+                            <button type="button" id="cancel-schedule-btn" class="btn-secondary">Cancel</button>
+                        </div>
+                    </form>
+
         </div>
     </div>
 
     <script src="script.js"></script>
     <script>
+
+let scheduledappointmentData = []; 
+
+async function loadScheduledAppointmentInfo() {
+    try {
+        const response = await fetch('/patients/loadscheduled_appointmentinfo');
+        if (!response.ok) throw new Error('Failed to fetch appointment info');
+        
+        scheduledappointmentData = await response.json(); 
+        
+        if (Array.isArray(scheduledappointmentData)) {
+            renderScheduledAppointmentsDiv(scheduledappointmentData); 
+        }
+    } catch (error) {
+        console.error('Error fetching patient info:', error);
+    }
+}
+function renderScheduledAppointmentsDiv(data) {
+    const container = document.getElementById('appointment-dates-items');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    data.forEach(a => {
+        let displayDate = 'N/A';
+        let displayTime = 'N/A';
+
+        if (a.appointment_time) {
+            const timeString = a.appointment_time.toString().replace(' ', 'T');
+            const d = new Date(timeString);
+
+            if (!isNaN(d.getTime())) {
+                displayDate = `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+                displayTime = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else {
+                displayDate = 'Error';
+                displayTime = 'Error';
+            }
+        }
+
+        // Force visible styling for debugging
+        const dateItem = document.createElement('div');
+        dateItem.className = 'date-item';
+        dateItem.style.cssText = 'display: block !important; padding: 8px; border: 1px solid red; margin: 4px;';
+        dateItem.innerHTML = `
+            <span class="date-icon" style="color: blue; font-size: 20px;">📅</span>
+            <span class="date-value" style="color: black; font-weight: bold; font-size: 13px; margin-left: 8px;">${displayDate}</span>
+            <span class="time-value" style="color: black; font-weight: bold; font-size: 13px; margin-left: 8px;">${displayTime}</span>
+        `;
+        container.appendChild(dateItem);
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', loadScheduledAppointmentInfo);
 
 
 document.getElementById('submit-schedule-btn').addEventListener('click', async () => {
@@ -99,23 +154,23 @@ document.getElementById('submit-schedule-btn').addEventListener('click', async (
 });
 let appointmentData = []; 
 
-async function loadAppointmentInfo() {
+async function loadCompletedAppointmentInfo() {
     try {
-        const response = await fetch('/patients/loadappointmentinfo');
+        const response = await fetch('/patients/loadcompleted_appointmentinfo');
         if (!response.ok) throw new Error('Failed to fetch appointment info');
         
         appointmentData = await response.json(); 
         
         if (appointmentData && Array.isArray(appointmentData)) {
-            renderAppointments(appointmentData); 
+            renderCompletedAppointments(appointmentData); 
         }
     } catch (error) {
         console.error('Error fetching patient info:', error);
     }
 }
-document.addEventListener('DOMContentLoaded', loadAppointmentInfo);
+document.addEventListener('DOMContentLoaded', loadCompletedAppointmentInfo);
 
-function renderAppointments(appointments) { 
+function renderCompletedAppointments(appointments) { 
     const tbody = document.getElementById('appointments-tbody');
     if (!tbody) return;
     
@@ -226,6 +281,42 @@ async function Logout() {
         alert('A network error occurred during sign out.');
     }
 }
+
+function setDateTimeConstraints() {
+    const input = document.getElementById('input-appt-datetime');
+    const now = new Date();
+    
+    const monday = new Date(now);
+    const day = monday.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    monday.setDate(monday.getDate() + diffToMonday);
+    monday.setHours(8, 0, 0, 0);
+
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+    friday.setHours(17, 0, 0, 0);
+    
+    input.min = formatDateTimeLocal(monday);
+    input.max = formatDateTimeLocal(friday);
+
+    input.addEventListener('input', function() {
+
+    });
+}
+
+function formatDateTimeLocal(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+}
+
+document.addEventListener('DOMContentLoaded', setDateTimeConstraints);
+
+
+document.addEventListener('DOMContentLoaded', setDateTimeConstraints);
 
 const signoutButton = document.getElementById('signout-button');
 
