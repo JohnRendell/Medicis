@@ -239,7 +239,7 @@ async function handleFormSubmit(event) {
   try {
     const formData = {
       fullname: document.getElementById('nameInput').value,
-      position: document.getElementById('positionInput').value,
+      position: document.getElementById('positionInput').value.toLowerCase(),
       username: document.getElementById('usernameInput').value || '',
       password: document.getElementById('passwordInput').value || ''
     };
