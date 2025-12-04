@@ -166,7 +166,7 @@ app.get('/loadpatientinfo', LoginAuth, async (req, res) => {
     
     const userId = req.session.user.user_id;
     const patient_info = await getPatientById(userId); 
-
+    
     patient_info.age = getAge(patient_info.date_of_birth)
     patient_info.date_of_birth = formatDate(patient_info.date_of_birth)
 
@@ -334,6 +334,13 @@ app.post('/createappointment', LoginAuth, async (req,res) =>{
     );
 
     if(result.affectedRows > 0){
+      const [set_billing] = await db.query(
+        "INSERT INTO billing (patient_id, appointment_id, due_date) VALUES (?, ?, ?)", [patient_id, result.insertId, new Date()]
+      )
+
+      if(set_billing.affectedRows == 0){
+        return res.status(200).json({ success: false, message: "Failed to add bill"})
+      }
       return res.status(200).json({ success: true, message: "Appointment created Successfully", appointment: result.insertId })
     }
 

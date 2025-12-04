@@ -139,4 +139,21 @@ app.get('/logout', (req, res) => {
     }
 });
 
+app.patch("/set_status", async (req, res)=>{
+    try{
+        const [set_status] = await db.query(
+            "UPDATE billing SET status = ? WHERE billing_id = ?", [req.body.status, req.body.id]
+        )
+
+        if(set_status.affectedRows > 0){
+            return res.status(200).json({ success: true, message: "success" })
+        }
+        return res.status(400).json({ success: false, message: "invalid" })
+    }
+    catch(err){
+        console.log(err)
+        return res.status(500).json({ success: false, message: err })
+    }
+})
+
 module.exports = app;

@@ -78,8 +78,6 @@
               </tbody>
             </table>
           </div>
-
-          <button class="manage-btn" type="button">Manage</button>
         </section>
       </div>
     </main>
@@ -109,64 +107,93 @@
       return `${year}-${month}-${day}`;
     }
 
-  window.onload = async ()=>{
-    load_staff_info();
+  window.onload = async () => {
+      load_staff_info();
 
-    try{
-      const query = await fetch("/staff/display-billing", {
-        method: "GET"
-      });
+      try {
+        const query = await fetch("/staff/display-billing", {
+          method: "GET"
+        });
 
-      const tbody = document.getElementById("populate_table")
-      const res = await query.json();
+        const tbody = document.getElementById("populate_table");
+        const res = await query.json();
 
-      if (res.success && res.data.length > 0) {
-        for (let i = 0; i < res.data.length; i++) {
-          const tr = document.createElement("tr");
+        if (res.success && res.data.length > 0) {
+          for (let i = 0; i < res.data.length; i++) {
+            const row = res.data[i];
+            const tr = document.createElement("tr");
 
-          const billing_id = document.createElement("td");
-          billing_id.appendChild(document.createTextNode(res.data[i].billing_id));
+            const mkCell = (value) => {
+              const td = document.createElement("td");
+              td.appendChild(document.createTextNode(value));
+              return td;
+            };
 
-          const amount_paid = document.createElement("td");
-          amount_paid.appendChild(document.createTextNode(res.data[i].amount_paid));
+            tr.appendChild(mkCell(row.billing_id));
+            tr.appendChild(mkCell(row.amount_paid));
+            tr.appendChild(mkCell(row.patient_id));
+            tr.appendChild(mkCell(row.appointment_id));
+            tr.appendChild(mkCell(row.amount_due));
+            tr.appendChild(mkCell(formatDate(row.due_date)));
 
-          const patient_id = document.createElement("td");
-          patient_id.appendChild(document.createTextNode(res.data[i].patient_id));
+            // Status dropdown
+            const statusTD = document.createElement("td");
+            const statusSelect = document.createElement("select");
 
-          const appointment_id = document.createElement("td");
-          appointment_id.appendChild(document.createTextNode(res.data[i].appointment_id));
+            const options = ["Unpaid", "Partially_Paid", "Paid"];
+            for (const opt of options) {
+              const optionElem = document.createElement("option");
+              optionElem.value = opt;
+              optionElem.textContent = opt;
+              if (opt.toLowerCase() === row.status.toLowerCase()) {
+                optionElem.selected = true;
+              }
+              statusSelect.appendChild(optionElem);
+            }
 
-          const amount_due = document.createElement("td");
-          amount_due.appendChild(document.createTextNode(res.data[i].amount_due));
+            // Call the status setter when changed
+            statusSelect.onchange = () => {
+              set_status(statusSelect.value, row.billing_id);
+            };
 
-          const due_date = document.createElement("td");
-          due_date.appendChild(document.createTextNode(formatDate(res.data[i].due_date)));
+            statusTD.appendChild(statusSelect);
+            tr.appendChild(statusTD);
 
-          const status = document.createElement("td");
-          status.appendChild(document.createTextNode(res.data[i].status));
-
-          tr.appendChild(billing_id);
-          tr.appendChild(amount_paid);
-          tr.appendChild(patient_id);
-          tr.appendChild(appointment_id);
-          tr.appendChild(amount_due);
-          tr.appendChild(due_date);
-          tr.appendChild(status);
-
-          tbody.appendChild(tr);
+            tbody.appendChild(tr);
+          }
+          return;
         }
-        return;
-      }
 
-      const tr = document.createElement("tr");
-      const td = document.createElement("td");
-      td.setAttribute("colspan", 5);
-      td.appendChild(document.createTextNode("No billing records to display"));
-      tr.appendChild(td);
-      tbody.appendChild(tr);
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.setAttribute("colspan", 7);
+        td.appendChild(document.createTextNode("No billing records to display"));
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      } catch (err) {
+        alert(err);
+      }
+    };
+
+    async function set_status(status, id){
+      try{
+        const res = await fetch("/staff/set_status", {
+          method: "PATCH", 
+          headers: {
+            "Content-type": "application/json"
+          },
+          body: JSON.stringify({ status: status, id: id })
+        });
+
+        const result = await res.json();
+        
+        if(result.success){
+          window.location.reload()
+        }
+      }
+      catch(err){
+        alert(err)
+      }
     }
-    catch(err){
-      alert(err)
-    }
-  }
+
 </script>

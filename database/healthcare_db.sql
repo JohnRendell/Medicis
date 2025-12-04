@@ -26,24 +26,10 @@ CREATE TABLE IF NOT EXISTS `appointment` (
   KEY `patient_id` (`patient_id`),
   KEY `staff_id` (`staff_id`),
   CONSTRAINT `FK__patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `FK_appointment_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `FK_appointment_staff` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`staff_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table healthcare_db.appointment: ~9 rows (approximately)
-DELETE FROM `appointment`;
-INSERT INTO `appointment` (`appointment_id`, `status`, `staff_id`, `patient_id`, `appointment_time`, `type`) VALUES
-	(1, 'scheduled', NULL, 1, '2025-11-28 17:00:39', 'online'),
-	(2, 'scheduled', NULL, 2, '2025-12-01 10:00:00', 'online'),
-	(12, 'scheduled', NULL, 2, '2026-05-18 14:04:00', 'online'),
-	(57, 'completed', NULL, 2, '2025-12-02 20:22:36', 'online'),
-	(58, 'scheduled', NULL, 2, '2025-12-11 20:44:00', 'online'),
-	(59, 'scheduled', NULL, 2, '2025-12-25 20:42:00', 'online'),
-	(60, 'scheduled', NULL, 2, '2025-12-04 10:51:00', 'online'),
-	(61, 'completed', NULL, 2, '2025-12-05 21:49:00', 'online'),
-	(62, 'completed', NULL, 2, '2025-12-03 16:40:00', 'online'),
-	(63, 'scheduled', NULL, 2, '2025-12-04 10:56:00', 'online'),
-	(64, 'scheduled', NULL, 2, '2025-12-04 22:58:00', 'online'),
-	(65, 'scheduled', NULL, 2, '2025-12-04 15:34:00', 'online');
+-- Dumping data for table healthcare_db.appointment: ~15 rows (approximately)
 
 -- Dumping structure for table healthcare_db.billing
 CREATE TABLE IF NOT EXISTS `billing` (
@@ -57,16 +43,11 @@ CREATE TABLE IF NOT EXISTS `billing` (
   PRIMARY KEY (`billing_id`),
   KEY `patient_id` (`patient_id`),
   KEY `appointment_id` (`appointment_id`),
-  CONSTRAINT `FK_billing_appointment` FOREIGN KEY (`appointment_id`) REFERENCES `appointment` (`appointment_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `FK_billing_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `FK_billing_appointment` FOREIGN KEY (`appointment_id`) REFERENCES `appointment` (`appointment_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_billing_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table healthcare_db.billing: ~2 rows (approximately)
-DELETE FROM `billing`;
-INSERT INTO `billing` (`billing_id`, `amount_paid`, `patient_id`, `appointment_id`, `amount_due`, `due_date`, `status`) VALUES
-	(3, 0.00, 2, NULL, 500.00, NULL, 'Unpaid'),
-	(4, 0.00, 2, NULL, 5000.00, '2025-12-06', 'Unpaid'),
-	(5, 450.00, 2, NULL, 500.00, NULL, 'Unpaid');
+-- Dumping data for table healthcare_db.billing: ~3 rows (approximately)
 
 -- Dumping structure for table healthcare_db.online_payment
 CREATE TABLE IF NOT EXISTS `online_payment` (
@@ -79,12 +60,10 @@ CREATE TABLE IF NOT EXISTS `online_payment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table healthcare_db.online_payment: ~0 rows (approximately)
-DELETE FROM `online_payment`;
 
 -- Dumping structure for table healthcare_db.patient
 CREATE TABLE IF NOT EXISTS `patient` (
   `patient_id` int NOT NULL AUTO_INCREMENT,
-  `diagnosis` varchar(255) NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `email` varchar(255) NOT NULL,
   `phone` varchar(20) NOT NULL,
@@ -96,15 +75,9 @@ CREATE TABLE IF NOT EXISTS `patient` (
   PRIMARY KEY (`patient_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `FK_patient_user_account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table healthcare_db.patient: ~4 rows (approximately)
-DELETE FROM `patient`;
-INSERT INTO `patient` (`patient_id`, `diagnosis`, `name`, `email`, `phone`, `date_of_birth`, `address`, `user_id`, `sex`, `age`) VALUES
-	(1, '', 'Nigel Antipolo', 'nigelpogiako@gmail.com', '09155526780', '2025-10-15', 'Mars Earth', NULL, 'Male', 100),
-	(2, '', 'pogiNigel', 'apogiako@gmail.com', '0915151515111', '2006-10-27', 'Jupiter', 11, 'Male', 19),
-	(3, '', 'Juan Dela Cruzffff', 'admin@gmail.com', '09123456789', '2025-11-04', 'Juipieter', 12, 'Male', 67),
-	(4, '', 'Nigel Antipolo', 'nigel@gmail.com', '08277478510', '2003-04-22', 'Sa puso mo', NULL, 'Male', 22);
+-- Dumping data for table healthcare_db.patient: ~11 rows (approximately)
 
 -- Dumping structure for table healthcare_db.payment
 CREATE TABLE IF NOT EXISTS `payment` (
@@ -119,7 +92,6 @@ CREATE TABLE IF NOT EXISTS `payment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table healthcare_db.payment: ~0 rows (approximately)
-DELETE FROM `payment`;
 
 -- Dumping structure for table healthcare_db.receipt
 CREATE TABLE IF NOT EXISTS `receipt` (
@@ -132,7 +104,6 @@ CREATE TABLE IF NOT EXISTS `receipt` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table healthcare_db.receipt: ~0 rows (approximately)
-DELETE FROM `receipt`;
 
 -- Dumping structure for table healthcare_db.staff
 CREATE TABLE IF NOT EXISTS `staff` (
@@ -143,13 +114,9 @@ CREATE TABLE IF NOT EXISTS `staff` (
   PRIMARY KEY (`staff_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `FK_staff_user_account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table healthcare_db.staff: ~2 rows (approximately)
-DELETE FROM `staff`;
-INSERT INTO `staff` (`staff_id`, `name`, `position`, `user_id`) VALUES
-	(5, 'dragon', 'nurse', 18),
-	(19, 'asdsad', 'doctor', 32);
+-- Dumping data for table healthcare_db.staff: ~0 rows (approximately)
 
 -- Dumping structure for table healthcare_db.user_account
 CREATE TABLE IF NOT EXISTS `user_account` (
@@ -159,15 +126,9 @@ CREATE TABLE IF NOT EXISTS `user_account` (
   `role` enum('User','Staff','Admin','Cashier') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'User',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table healthcare_db.user_account: ~4 rows (approximately)
-DELETE FROM `user_account`;
-INSERT INTO `user_account` (`user_id`, `username`, `password`, `role`, `created_at`) VALUES
-	(11, 'admin123', '$2b$10$Z1uCwQe8YxOkVC/Vp56Qyu4WUy3HLQPuiROKvpdmzYPRwQMGIykQS', 'User', '2025-11-28 00:31:44'),
-	(12, 'abcd123', '$2b$10$sH2/nRakZuntNGq0xQhJPe1zjpSEyCoWixTlC8srhlVKudDZYS1/W', 'Admin', '2025-11-28 07:16:34'),
-	(18, 'dragon', '$2b$10$kABmlXm8E0ixBSpfzCLbauCXM7vogd373GroBiQyCpUsg69emJD8y', 'Staff', '2025-12-04 13:09:13'),
-	(32, 'asdasd', '$2b$10$wIOx95T.Od.mZNc41Z/FWutSqDLj9Vwr.DW3TygS7GhvqLO/JDGN.', 'Staff', '2025-12-04 13:52:05');
+-- Dumping data for table healthcare_db.user_account: ~14 rows (approximately)
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
