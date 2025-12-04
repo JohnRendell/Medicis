@@ -58,7 +58,7 @@ function register2_middleware(req, res, next) {
 
     const age = getAge(birthday, today);
 
-    if (age < 0 || age > 120) {
+    if (age <= 0 || age >= 120) {
         return res.status(400).json({ success: false, message: "Age is not valid" });
     }
 

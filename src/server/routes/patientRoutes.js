@@ -32,11 +32,16 @@ function validate_edit_info(req, res, next){
   }
 
   const birthday = new Date(date_of_birth);
+  birthday.setHours(0,0,0,0);
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
   if (isNaN(birthday.getTime())) {
       return res.status(400).json({ success: false, message: "Invalid date format" });
   }
 
-  if (birthday >= new Date()) {
+  if (birthday >= today) {
       return res.status(400).json({ success: false, message: "Birthday cannot be in the future" });
   }
 
@@ -49,9 +54,9 @@ function validate_edit_info(req, res, next){
         return age;
     }
 
-  const age = getAge(birthday, new Date());
+  const age = getAge(birthday, today);
 
-  if (age <= 0 || age > 120) {
+  if (!age || age <= 0 || age >= 120) {
       return res.status(400).json({ success: false, message: "Age is not valid" });
   }
 
@@ -117,6 +122,7 @@ app.post('/login', login_account_middleware, async (req, res) => {
         if(authenticatedUser.role == "Staff"){
           req.session.isStaff = true
         }
+
         if(authenticatedUser.role == "Admin"){
           req.session.isAdmin = true
         }
@@ -294,12 +300,23 @@ app.post('/createappointment', LoginAuth, async (req,res) =>{
     }
 
     const appt = new Date(appointment_datetime);
-    const now = new Date();
+  const now = new Date();
 
-    if (appt < now) {
+  const apptDate = new Date(appt.getFullYear(), appt.getMonth(), appt.getDate());
+  const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+
+    if (apptDate < todayDate) {
       return res.status(400).json({
         success: false,
         message: "Appointment cannot be in the past."
+      });
+    }
+
+    if (apptDate.getTime() == todayDate.getTime()) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot set appointment today, try tomorrow"
       });
     }
 
