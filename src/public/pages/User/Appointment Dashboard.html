@@ -76,10 +76,21 @@
                     <form id="schedule-appt-form" class="edit-form" novalidate onsubmit="Create_Appointment(event)">
                         <div class="form-grid">
                             <div class="form-field">
-                    <label for="input-appt-datetime">Date & Time (8AM-5PM, hours only)</label>
-                    <input id="input-appt-datetime" name="appointment-datetime" type="datetime-local" required step="3600">
-
-                            </div> 
+                                <label for="input-appt-datetime">Date & Time (8AM-5PM, hours only)</label>
+                                <input id="input-appt-datetime" name="appointment-datetime" type="datetime-local" required step="3600">
+                            </div>
+                            <div class="form-field">
+                                <label for="input-doctor">Select Doctor</label>
+                                <select id="input-doctor" name="doctor" required>
+                                    <option value="">-- Choose a Doctor --</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label for="input-nurse">Select Nurse</label>
+                                <select id="input-nurse" name="nurse" required>
+                                    <option value="">-- Choose a Nurse --</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="edit-actions">
                             <button type="submit" class="btn-primary" id="submit-schedule-btn">Schedule</button>
