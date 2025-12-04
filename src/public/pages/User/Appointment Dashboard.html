@@ -73,28 +73,22 @@
                 <div class="edit-header">
                     <h2 id="schedule-appt-title">Schedule an Appointment</h2>
                 </div>
-                    <form id="schedule-appt-form" class="edit-form" novalidate onsubmit="Create_Appointment(event)">
+                    <form id="schedule-appt-form" class="edit-form" onsubmit="Create_Appointment(event)">
                         <div class="form-grid">
                             <div class="form-field">
                                 <label for="input-appt-datetime">Date & Time (8AM-5PM, hours only)</label>
-                                <input id="input-appt-datetime" name="appointment-datetime" type="datetime-local" required step="3600">
+                                <input id="input-appt-datetime" name="appointment-datetime" type="datetime-local" required>
                             </div>
                             <div class="form-field">
-                                <label for="input-doctor">Select Doctor</label>
-                                <select id="input-doctor" name="doctor" required>
-                                    <option value="">-- Choose a Doctor --</option>
-                                </select>
-                            </div>
-                            <div class="form-field">
-                                <label for="input-nurse">Select Nurse</label>
-                                <select id="input-nurse" name="nurse" required>
-                                    <option value="">-- Choose a Nurse --</option>
+                                <label for="input-staf">Select Staff</label>
+                                <select id="input-staff" name="staff" required>
+                                    <option value="">-- Choose a Staff to assist --</option>
                                 </select>
                             </div>
                         </div>
                         <div class="edit-actions">
-                            <button type="submit" class="btn-primary" id="submit-schedule-btn">Schedule</button>
-                            <button type="button" id="cancel-schedule-btn" class="btn-secondary">Cancel</button>
+                            <button class="btn-primary" id="submit-schedule-btn" type="submit">Schedule</button>
+                            <button id="cancel-schedule-btn" class="btn-secondary" type="button">Cancel</button>
                         </div>
                     </form>
 
@@ -103,6 +97,34 @@
 
     <script src="script.js"></script>
     <script>
+
+async function load_staff() {
+    try{
+        var dropdown_parent = document.getElementById("input-staff");
+
+        const res = await fetch("/patients/load_staff", {
+            method: "GET"
+        })
+
+        const result = await res.json();
+
+        if(result.success){
+            for(let i = 0; i < result.data.length; i++){
+                var staff = result.data[i];
+                var staff_pos = staff.position == "doctor" ? "Dr." : "Rn."
+
+                var option = document.createElement("option");
+                option.setAttribute("value", staff.staff_id);
+                option.appendChild(document.createTextNode(staff_pos + " " + staff.name));
+                dropdown_parent.appendChild(option);
+            }
+        }
+        //
+    }
+    catch(err){
+        alert(err)
+    }
+}
 
 let scheduledappointmentData = []; 
 
@@ -170,14 +192,10 @@ async function loadPatientInfo() {
     }
 }
 document.addEventListener('DOMContentLoaded', loadPatientInfo);
-
+document.addEventListener('DOMContentLoaded', load_staff);
 
 document.addEventListener('DOMContentLoaded', loadScheduledAppointmentInfo);
 
-
-document.getElementById('submit-schedule-btn').addEventListener('click', async () => {
-        window.location.reload();
-});
 let appointmentData = []; 
 
 async function loadCompletedAppointmentInfo() {
@@ -243,33 +261,30 @@ async function Create_Appointment(event){
     try{
         event.preventDefault()
         const appointment_sched = document.getElementById("input-appt-datetime").value
+        const select = document.getElementById("input-staff");
+        const staff_id = select.options[select.selectedIndex].value;
 
-        if (!appointment_sched) {
-            showCustomMessage("Input Required", "Please select a date and time.", true);
-            return;
-        }
+        console.log(staff_id)
         let payload = { 
-            appointment_datetime: appointment_sched 
+            appointment_datetime: appointment_sched,
+            staff_id: staff_id
         }
-             const res = await fetch("/patients/createappointment", {
-                method: "POST",
-                headers: {
-                    "Content-type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-            const res_json = await res.json();
+        const res = await fetch("/patients/createappointment", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
         
+        const res_json = await res.json();
 
-  if (res.status === 201) { 
-            showCustomMessage("Success!", res_json.message, false); 
+        if(res_json.success){
             window.location.reload();
-
-        } else {
-
-            showCustomMessage("Scheduling Error", res_json.error || res_json.message, true);
             return
         }
+        alert(res_json.message)
+        return
     }
     catch(error){
 

@@ -51,7 +51,7 @@ function validate_edit_info(req, res, next){
 
   const age = getAge(birthday, new Date());
 
-  if (age < 0 || age > 120) {
+  if (age <= 0 || age > 120) {
       return res.status(400).json({ success: false, message: "Age is not valid" });
   }
 
@@ -69,14 +69,6 @@ function validate_edit_info(req, res, next){
   }
   req.session.additionalData = { age };
   next();
-}
-
-// Validates that the role is User
-function userOnly(req, res, next) {
-    if (req.session.user.role !== 'User') {
-        return res.status(403).send("Access denied"); // not an admin
-    }
-    next();
 }
 
 async function login_account_middleware(req, res, next){
@@ -292,20 +284,40 @@ app.post('/createappointment', LoginAuth, async (req,res) =>{
     const userId = req.session.user.user_id;
     const patient_info = await getPatientById(userId); 
     const patient_id = patient_info.patient_id; 
+    const { appointment_datetime, staff_id } = req.body;
 
+    if(!appointment_datetime || !staff_id){
+      return res.status(400).json({ success: false, message: "Fields are empty." })
+    }
 
-        const { appointment_datetime } = req.body;
+    const appt = new Date(appointment_datetime);
+    const now = new Date();
 
-const [result] = await db.query(
-  "INSERT INTO appointment (patient_id, appointment_time) VALUES (?, ?)",
-  [patient_id, appointment_datetime]
-);
+    if (appt < now) {
+      return res.status(400).json({
+        success: false,
+        message: "Appointment cannot be in the past."
+      });
+    }
 
-res.status(201).json({ 
-  message: 'Appointment created successfully.', 
-  appointment: result.insertId
-  
-});
+    const hour = appt.getHours();
+    if (hour < 8 || hour >= 17) {
+      return res.status(400).json({
+        success: false,
+        message: "Appointment must be between 8:00 AM and 5:00 PM."
+      });
+    }
+
+    const [result] = await db.query(
+      "INSERT INTO appointment (patient_id, appointment_time, staff_id) VALUES (?, ?, ?)",
+      [patient_id, appointment_datetime, staff_id]
+    );
+
+    if(result.affectedRows > 0){
+      return res.status(200).json({ success: true, message: "Appointment created Successfully", appointment: result.insertId })
+    }
+
+    return res.status(400).json({ success: false, message: "Invalid appointment" })
 
         
 } catch(error) {
@@ -329,6 +341,22 @@ app.get('/loadbillings', LoginAuth, async (req,res) => {
     res.status(500).send('Server error');
 }
 });
+
+app.get("/load_staff", async (req, res)=>{
+  try{
+    const [load_staff] = await db.query(
+      "SELECT * FROM staff"
+    )
+
+    if(load_staff.length > 0){
+      return res.status(200).json({ success: true, message: "Returned staff success", data: load_staff })
+    }
+    return res.status(404).json({ success: false, message: "No staff available" })
+  }
+  catch(err){
+    return res.status(500).json({ success: false, message: err })
+  }
+})
 
 
 
