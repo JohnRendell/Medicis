@@ -39,5 +39,22 @@ async function getBillingByPatientId(userId) {
   return rows;  
 }
 
+async function getAllStaffWithInfo() {
+  const [rows] = await db.query(`
+    SELECT ua.user_id, ua.username, ua.role, ua.created_at, 
+           s.staff_id, s.name, s.position 
+    FROM user_account ua 
+    LEFT JOIN staff s ON ua.user_id = s.user_id 
+    WHERE ua.role = 'Staff'
+  `);
+  return rows;
+}
 
-module.exports = { getUserById,getPatientById, getScheduledAppointmentsByPatientId, getCompletedAppointmentByPatientId, getBillingByPatientId};
+async function getStaffbyUserId(userId){
+  const [rows] = await db.query(
+    "SELECT * FROM user_account WHERE user_id = ? ", [userId]
+  );
+  return rows[0];  
+}
+
+module.exports = { getUserById,getPatientById, getScheduledAppointmentsByPatientId, getCompletedAppointmentByPatientId, getBillingByPatientId, getAllStaffWithInfo, getStaffbyUserId};
