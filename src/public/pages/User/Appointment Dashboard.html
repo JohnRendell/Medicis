@@ -335,28 +335,6 @@ async function Logout() {
     }
 }
 
-function setDateTimeConstraints() {
-    const input = document.getElementById('input-appt-datetime');
-    const now = new Date();
-    
-    const monday = new Date(now);
-    const day = monday.getDay();
-    const diffToMonday = day === 0 ? -6 : 1 - day;
-    monday.setDate(monday.getDate() + diffToMonday);
-    monday.setHours(8, 0, 0, 0);
-
-    const friday = new Date(monday);
-    friday.setDate(monday.getDate() + 4);
-    friday.setHours(17, 0, 0, 0);
-    
-    input.min = formatDateTimeLocal(monday);
-    input.max = formatDateTimeLocal(friday);
-
-    input.addEventListener('input', function() {
-
-    });
-}
-
 function formatDateTimeLocal(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -365,11 +343,6 @@ function formatDateTimeLocal(date) {
     const minute = String(date.getMinutes()).padStart(2, '0');
     return `${year}-${month}-${day}T${hour}:${minute}`;
 }
-
-document.addEventListener('DOMContentLoaded', setDateTimeConstraints);
-
-
-document.addEventListener('DOMContentLoaded', setDateTimeConstraints);
 
 const signoutButton = document.getElementById('signout-button');
 

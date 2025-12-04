@@ -100,6 +100,7 @@
       return `${hours}:${minutes}`;
     }
 
+    let id;
     async function load_staff_into() {
       const query = await fetch("/staff/staff_info", {
         method: "GET"
@@ -108,6 +109,7 @@
       const res = await query.json();
 
       if (res.success) {
+        id = res.data.staff_id
         document.getElementById("staff-id").innerHTML = "Staff ID: " + res.data.staff_id
         document.getElementById("staff-name").innerHTML = res.data.name
         return
@@ -143,7 +145,25 @@
           patient.appendChild(document.createTextNode(res.data[i].patient_id));
 
           const status = document.createElement("td");
-          status.appendChild(document.createTextNode(res.data[i].status));
+          const statusSelect = document.createElement("select");
+
+          const options = ["scheduled", "completed", "cancelled"];
+          
+          for (const opt of options) {
+            const optionElem = document.createElement("option");
+            optionElem.value = opt;
+            optionElem.textContent = opt;
+            if (opt.toLowerCase() === res.data[i].status.toLowerCase()) {
+              optionElem.selected = true;
+            }
+            statusSelect.appendChild(optionElem);
+          }
+
+          statusSelect.onchange = () => {
+            set_status(statusSelect.value, res.data[i].appointment_id);
+          };
+
+          status.appendChild(statusSelect);
 
           tr.appendChild(appointment_ID);
           tr.appendChild(date);
@@ -165,6 +185,27 @@
     }
     catch(err){
       alert(err)
+    }
+
+    async function set_status(status, id) {
+      try {
+        const res = await fetch("/staff/set_app_status", {
+          method: "PATCH",
+          headers: {
+            "Content-type": "application/json"
+          },
+          body: JSON.stringify({ status: status, id: id })
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          window.location.reload()
+        }
+      }
+      catch (err) {
+        alert(err)
+      }
     }
   };
 

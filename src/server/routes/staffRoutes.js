@@ -141,8 +141,37 @@ app.get('/logout', (req, res) => {
 
 app.patch("/set_status", async (req, res)=>{
     try{
+        let amount_paid = 0.0
+        let amount_due = 0.0
+
+        if (req.body.status == "Partially_Paid"){
+            amount_paid = 250.0
+            amount_due = 250.0
+        }
+
+        if(req.body.status == "Paid"){
+            amount_paid = 500.0
+            amount_due = 0.0
+        }
         const [set_status] = await db.query(
-            "UPDATE billing SET status = ? WHERE billing_id = ?", [req.body.status, req.body.id]
+            "UPDATE billing SET status = ?, amount_paid = ?, amount_due = ? WHERE billing_id = ?", [req.body.status, amount_paid, amount_due, req.body.id]
+        )
+
+        if(set_status.affectedRows > 0){
+            return res.status(200).json({ success: true, message: "success" })
+        }
+        return res.status(400).json({ success: false, message: "invalid" })
+    }
+    catch(err){
+        console.log(err)
+        return res.status(500).json({ success: false, message: err })
+    }
+});
+
+app.patch("/set_app_status", async (req, res)=>{
+    try{
+        const [set_status] = await db.query(
+            "UPDATE appointment SET status = ? WHERE appointment_id = ?", [req.body.status, req.body.id]
         )
 
         if(set_status.affectedRows > 0){
