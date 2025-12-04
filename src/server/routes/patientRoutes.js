@@ -293,7 +293,7 @@ app.post('/createappointment', LoginAuth, async (req,res) =>{
     const userId = req.session.user.user_id;
     const patient_info = await getPatientById(userId); 
     const patient_id = patient_info.patient_id; 
-    const { appointment_datetime, staff_id } = req.body;
+    const { appointment_datetime, staff_id, app_type } = req.body;
 
     if(!appointment_datetime || !staff_id){
       return res.status(400).json({ success: false, message: "Fields are empty." })
@@ -329,8 +329,8 @@ app.post('/createappointment', LoginAuth, async (req,res) =>{
     }
 
     const [result] = await db.query(
-      "INSERT INTO appointment (patient_id, appointment_time, staff_id) VALUES (?, ?, ?)",
-      [patient_id, appointment_datetime, staff_id]
+      "INSERT INTO appointment (patient_id, appointment_time, staff_id, type) VALUES (?, ?, ?, ?)",
+      [patient_id, appointment_datetime, staff_id, app_type.toLowerCase()]
     );
 
     if(result.affectedRows > 0){

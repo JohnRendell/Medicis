@@ -19,7 +19,6 @@
             <div class="user-info-icon">👤</div>
             <div class="user-info-content">
                 <div class="user-info-name">Admin</div>
-                <div class="user-info-id">Staff ID: admin</div>
             </div>
         </div>
     </div>
@@ -133,10 +132,9 @@ function filterStaffTable(searchTerm) {
 
     return staff.staff_id?.toString().includes(searchTerm) ||
            staff.name?.toLowerCase().includes(searchTerm) ||
-           staff.position?.toLowerCase().includes(searchTerm) ||
-           staff.username?.toLowerCase().includes(searchTerm);
+           staff.position?.toLowerCase().includes(searchTerm);
   });
-  
+
   renderStaffTable(filteredStaff);
 }
 
@@ -171,6 +169,7 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
 
 
         let staffList = [];
+       
         // load staff info
         async function loadStaffInfo() {
         try {
