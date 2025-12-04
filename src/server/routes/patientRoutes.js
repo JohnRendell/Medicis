@@ -6,7 +6,7 @@ const db = require("../config/db");
 const bcrypt = require("bcrypt");
 // PATIENT PAGESSSSSSSSSS --------------------------------------------------- 
 
-const { getUserById, getPatientById, getScheduledAppointmentsByPatientId, getCompletedAppointmentByPatientId, getBillingByPatientId } = require('../models/patient_session');
+const { getUserById, getPatientById, getScheduledAppointmentsByPatientId, getCompletedAppointmentByPatientId, getBillingByPatientId, getAllStaff } = require('../models/patient_session');
 
 
 // if not logged in then redirect to login page
@@ -116,6 +116,9 @@ app.post('/login', login_account_middleware, async (req, res) => {
 
         if(authenticatedUser.role == "Staff"){
           req.session.isStaff = true
+        }
+        if(authenticatedUser.role == "Admin"){
+          req.session.isAdmin = true
         }
 
 
@@ -246,7 +249,7 @@ app.patch('/update-patient-info', LoginAuth, validate_edit_info, async (req, res
     res.status(500).json({ success: false, message: "Internal Server Error", logs: error });
   }
 });
-
+// load completed appointments
 app.get('/loadcompleted_appointmentinfo', LoginAuth, async (req,res) =>{
   try {
     const userId = req.session.user.user_id;
@@ -261,7 +264,7 @@ app.get('/loadcompleted_appointmentinfo', LoginAuth, async (req,res) =>{
     res.status(500).send('Server error');
 }
 });
-
+// load scheduled appointments
 app.get('/loadscheduled_appointmentinfo', LoginAuth, async (req,res) =>{
   try {
     const userId = req.session.user.user_id;
@@ -277,7 +280,7 @@ app.get('/loadscheduled_appointmentinfo', LoginAuth, async (req,res) =>{
 }
 });
 
-
+// create appointment
 app.post('/createappointment', LoginAuth, async (req,res) =>{
  
   try {
@@ -326,6 +329,7 @@ app.post('/createappointment', LoginAuth, async (req,res) =>{
 }
 });
 
+//load billings
 app.get('/loadbillings', LoginAuth, async (req,res) => {
 
     try{

@@ -19,10 +19,14 @@ router.get("/create-account-part-2", (req, res) => {
 router.get("/dashboard", (req, res)=>{
     let isValid =  req.session.isValid
     let isStaff = req.session.isStaff;
+    let isAdmin = req.session.isAdmin;
 
     if(isValid){
         if(isStaff){
             return res.sendFile(path.join(__dirname, "../public/pages/Staff/Patient_info.html"));
+        }
+        if(isAdmin){
+            return res.sendFile(path.join(__dirname, "../public/pages/Admin/Staff_Management_Dashboard.html"));
         }
         return res.sendFile(path.join(__dirname, "../public/pages/User/info_Dashboard.html"));  
     }

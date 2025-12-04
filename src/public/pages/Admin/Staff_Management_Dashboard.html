@@ -83,11 +83,7 @@
                     <input type="text" class="form-input" id="nameInput" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Staff ID</label>
-                    <input type="text" class="form-input" id="staffIdInput" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Position</label>
+                    <label class="form-label">Position (doctor/nurse)</label>
                     <input type="text" class="form-input" id="positionInput" required>
                 </div>
 
@@ -122,59 +118,110 @@
     </div>
 
     <script>
-        // Sample data
-        let staffList = [
-            {
-                id: 1,
-                name: 'Nigel Ung',
-                staffId: '1234',
-                position: 'Doctor'
-            }
-        ];
 
-        let editingId = null;
-        let deletingId = null;
 
-        // Initialize
-        function init() {
-            renderStaffTable();
-            document.getElementById('searchInput').addEventListener('input', handleSearch);
-        }
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  const searchTerm = e.target.value.trim().toLowerCase();
+  filterStaffTable(searchTerm);
+});
 
-        // Render staff table
-        function renderStaffTable(data = staffList) {
-            const tbody = document.getElementById('staffTableBody');
-            const emptyState = document.getElementById('emptyState');
-            
-            tbody.innerHTML = '';
-            
-            if (data.length === 0) {
-                emptyState.style.display = 'block';
-                return;
-            }
-            
-            emptyState.style.display = 'none';
-            
-            data.forEach(staff => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${staff.name}</td>
-                    <td>${staff.staffId}</td>
-                    <td>${staff.position}</td>
-                    <td>
-                        <button class="btn-remove" onclick="openDeleteModal(${staff.id})">👤 Remove</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
+
+function filterStaffTable(searchTerm) {
+  if (!staffList || !Array.isArray(staffList)) return;
+  
+  const filteredStaff = staffList.filter(staff => {
+
+    return staff.staff_id?.toString().includes(searchTerm) ||
+           staff.name?.toLowerCase().includes(searchTerm) ||
+           staff.position?.toLowerCase().includes(searchTerm) ||
+           staff.username?.toLowerCase().includes(searchTerm);
+  });
+  
+  renderStaffTable(filteredStaff);
+}
+
+// 4. Clear search (optional)
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    this.value = '';
+    renderStaffTable(staffList);
+  }
+});
+
+        async function deleteStaff(userId) {
+        if (!confirm('Delete this staff?')) return;
+        
+        try {
+            const res = await fetch(`/admin/deletestaff/${userId}`, { 
+            method: "DELETE"
             });
+            
+            const data = await res.json();
+            
+            if (data.success) {
+            await loadStaffInfo();  // Refresh table
+            showCustomMessage("Staff deleted!", false);
+            } else {
+            showCustomMessage(data.message, true);
+            }
+        } catch (error) {
+            showCustomMessage("Delete failed", true);
         }
+        }
+
+
+        let staffList = [];
+        // load staff info
+        async function loadStaffInfo() {
+        try {
+            const response = await fetch('/admin/loadstaffinfo');
+            if (!response.ok) throw new Error('Failed to fetch staff info');
+            
+            staffList = await response.json(); 
+            
+            if (staffList && Array.isArray(staffList)) {
+            renderStaffTable(staffList);
+            }
+        } catch (error) {
+            console.error('Error fetching staff info:', error);
+        }
+        }
+function renderStaffTable(staffData = staffList) {  // Default to full list
+  const tbody = document.getElementById('staffTableBody');
+  const emptyState = document.getElementById('emptyState');
+  
+  tbody.innerHTML = '';
+  
+  if (staffData.length === 0) {
+    emptyState.textContent = 'No staff found';
+    emptyState.style.display = 'block';
+    return;
+  }
+  
+  emptyState.style.display = 'none';
+  
+  staffData.forEach(staff => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${staff.name || ''}</td>
+      <td>${staff.staff_id || ''}</td>
+      <td>${staff.position || ''}</td>
+      <td>
+        <button class="btn-remove" onclick="deleteStaff(${staff.user_id})">👤 Remove</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+        document.addEventListener('DOMContentLoaded', loadStaffInfo);
+
 
         // Open add modal
         function openAddModal() {
-            editingId = null;
+            
             document.getElementById('modalTitle').innerText = 'Add Staff';
             document.getElementById('staffForm').reset();
-            document.getElementById('staffIdInput').disabled = false;
             document.getElementById('submitBtn').innerText = 'Add Staff';
             // ensure username/password cleared
             document.getElementById('usernameInput').value = '';
@@ -185,37 +232,53 @@
         // Close modal
         function closeModal() {
             document.getElementById('staffModal').classList.remove('active');
-            editingId = null;
+            
         }
 
-        // Handle form submit
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('nameInput').value,
-                staffId: document.getElementById('staffIdInput').value,
-                position: document.getElementById('positionInput').value,
-                username: document.getElementById('usernameInput').value || '',
-                password: document.getElementById('passwordInput').value || ''
-            };
-            
-            if (editingId) {
-                const staff = staffList.find(s => s.id === editingId);
-                Object.assign(staff, formData);
-                showAlert('Staff member updated successfully!', 'success');
-            } else {
-                const newStaff = {
-                    id: Math.max(...staffList.map(s => s.id), 0) + 1,
-                    ...formData
-                };
-                staffList.push(newStaff);
-                showAlert('Staff member added successfully!', 'success');
-            }
-            
-            renderStaffTable();
-            closeModal();
+async function handleFormSubmit(event) {
+  event.preventDefault();
+  try {
+    const formData = {
+      fullname: document.getElementById('nameInput').value,
+      position: document.getElementById('positionInput').value,
+      username: document.getElementById('usernameInput').value || '',
+      password: document.getElementById('passwordInput').value || ''
+    };
+
+    if(!formData.fullname || !formData.username || !formData.password || !formData.position){
+      showCustomMessage("All fields required", true);
+      return;  
+    }
+    if(formData.position !== 'doctor' && formData.position !== 'nurse') {
+      showCustomMessage("Position should be doctor or nurse only!", true);
+      return;  
+    }
+  
+        const res = await fetch("/admin/createstaff", { 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+        });
+    
+        const data = await res.json();
+        
+        if (!res.ok) {  
+        throw new Error(data.message || 'Server error');
         }
+        
+        if(data.success) {
+        await loadStaffInfo(); 
+        closeModal();
+        showCustomMessage("Staff created successfully!", false);
+        } else {
+        showCustomMessage(data.message, true);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showCustomMessage(error.message || "Server error", true);
+    }
+
+    }
 
         // Open delete modal
         function openDeleteModal(id) {
@@ -237,16 +300,6 @@
             closeDeleteModal();
         }
 
-        // Handle search
-        function handleSearch(event) {
-            const searchTerm = event.target.value.toLowerCase();
-            const filtered = staffList.filter(staff => 
-                staff.staffId.toLowerCase().includes(searchTerm) ||
-                staff.name.toLowerCase().includes(searchTerm)
-            );
-            renderStaffTable(filtered);
-        }
-
         // Show alert
         function showAlert(message, type) {
             const alertContainer = document.getElementById('alertContainer');
@@ -258,30 +311,6 @@
             setTimeout(() => alert.remove(), 3000);
         }
 
-        // Sign out logic: immediate client-side redirect to the login page
-        function Logout() {
-            window.location.href = '/pages/login.html';
-        }
-
-        // Wire up signout + init once after DOM loaded
-        window.addEventListener('load', () => {
-            const signoutButton = document.getElementById('signout-button');
-            if (signoutButton) {
-                signoutButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    Logout();
-                });
-            }
-
-            if (typeof init === 'function') {
-                try {
-                    init();
-                } catch (err) {
-                    console.error('init() error', err);
-                }
-            }
-        });
-
         // Close modals on Escape key
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
@@ -289,6 +318,46 @@
                 if (typeof closeDeleteModal === 'function') closeDeleteModal();
             }
         });
+
+
+        async function Logout() {
+    try {
+        const response = await fetch('/admin/logout', {
+            method: 'GET',
+            credentials: 'include',
+
+            redirect: 'follow' 
+        });
+        if (response.ok) {
+            window.location.href = '/'; 
+        } else if (response.status === 302) {
+            const redirectUrl = response.headers.get('Location');
+            if (redirectUrl) {
+                console.log("Redirecting manually via Location header:", redirectUrl);
+                window.location.href = redirectUrl;
+            } else {
+
+                window.location.href = '/'; 
+            }
+
+        } else {
+
+            alert(`Logout failed with status ${response.status}.`);
+        }
+    } catch (error) {
+        console.error('Network error during sign out:', error);
+        alert('A network error occurred during sign out.');
+    }
+}
+const signoutButton = document.getElementById('signout-button');
+
+if (signoutButton) {
+    signoutButton.addEventListener('click', (e) => {
+        e.preventDefault(); 
+        Logout();
+    });
+}
+
     </script>
 </body>
 </html>

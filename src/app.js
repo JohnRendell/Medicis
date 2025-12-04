@@ -60,6 +60,7 @@ app.use("/user", require("./server/routes/userRoutes")); //->>
 
 app.use("/patients", require("./server/routes/patientRoutes")); //->>
 app.use("/staff", require("./server/routes/staffRoutes"));
+app.use("/admin", require("./server/routes/AdminRoutes"));
 //same as above dito
 
 //404 page -- pre eto yung invalid page, so kunwari nag type si user ng /redirect/test 
